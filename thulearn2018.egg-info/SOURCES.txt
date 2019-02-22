@@ -1,0 +1,9 @@
+README.md
+setup.py
+thulearn2018/__init__.py
+thulearn2018/learn.py
+thulearn2018.egg-info/PKG-INFO
+thulearn2018.egg-info/SOURCES.txt
+thulearn2018.egg-info/dependency_links.txt
+thulearn2018.egg-info/requires.txt
+thulearn2018.egg-info/top_level.txt
