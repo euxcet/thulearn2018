@@ -15,7 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
 	install_requires=['six>=1.11.0', 'requests>=2.18.4', 'bs4>=0.0.1', 'beautifulsoup4>=4.6.0'],
     classifiers=[
-        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],

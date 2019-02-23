@@ -19,10 +19,12 @@ class Learn():
 		self.set_semester()
 
 		self.init_lessons()
+		self.local = set()
+		self.init_local_files()
 
 	def init_user(self):
 		try:
-			f = open("/tmp/user.txt", "r")
+			f = open("/tmp/thulearn2018-user.txt", "r")
 			lines = f.readlines()
 			self.username = lines[0].replace('\n', '').replace('\r', '')
 			self.password = lines[1].replace('\n', '').replace('\r', '')
@@ -30,27 +32,38 @@ class Learn():
 		
 		except:
 			print("Enter your username: ")
-			self.username = raw_input()
+			self.username = input()
 			print("Enter your password: ")
-			self.password = raw_input()
+			self.password = input()
 
-			sf = open("/tmp/user.txt", "w")
-			print >> sf, self.username
-			print >> sf, self.password
+			sf = open("/tmp/thulearn2018-user.txt", "w")
+			print(self.username, file = sf)
+			print(self.password, file = sf)
+			sf.close()
+
+	def init_local_files(self):
+		try:
+			f = open("/tmp/thulearn2018-local.txt", "r")
+			lines = f.readlines()
+			for line in lines:
+				self.local.add(line.replace('\n', '').replace('\r', ''))
+			f.close()
+
+		except:
+			sf = open("/tmp/thulearn2018-local.txt", "w")
 			sf.close()
 
 	def check_save_path(self):
-
 		try:
-			f = open("/tmp/path.txt", "r")
+			f = open("/tmp/thulearn2018-path.txt", "r")
 			self.path = f.readlines()[0].replace('\n', '').replace('\r', '')
 			f.close()
 
 		except:
 			print("Enter the directory to save documents for this semester: ")
-			self.path = raw_input()
-			sf = open("/tmp/path.txt", "w")
-			print >> sf, self.path
+			self.path = input()
+			sf = open("/tmp/thulearn2018-path.txt", "w")
+			print(self.path, file = sf)
 			sf.close()
 
 	def login(self):
@@ -107,6 +120,19 @@ class Learn():
 		return files_id
 		
 
+	def save_file_id(self, fid):
+		if (fid not in self.local):
+			self.local.add(fid)
+			try:
+				f = open("/tmp/thulearn2018-local.txt", "a")
+				print(fid, file = f)
+				f.close()
+			except:
+				pass
+			return True
+		else:
+			return False
+
 	def download_files(self, lesson_id, lesson_name, file_id):
 		# download files
 		# lesson_id example "2018-2019-226ef84e7689589e90168990b99383064"
@@ -115,8 +141,11 @@ class Learn():
 		files = json.loads(self.session.get(file_url).content)
 		for f in files["object"]:
 			file_name = f[1]
-			fid = f[7]
 			#  fid example "2007990011_KJ_1548755901_04ee49a1-3a86-4b4e-841a-b5b55e789234_sjqy01-admin"
+			fid = f[7]
+
+			if (not self.save_file_id(fid)):
+				continue
 
 			download_before_url = self.url + "b/kc/wj_wjb/downloadFileBefore" + "?wjid=" + fid
 			download_url = self.url + "b/wlxt/kj/wlkc_kjxxb/student/downloadFile" + "?sfgk=0" + "&wjid=" + fid
@@ -129,12 +158,12 @@ class Learn():
 				fname, extension = os.path.splitext(f.headers["Content-Disposition"][22:-1])
 					
 			if (fname != "UNKNOWN"):
-
-				print("  New " + file_name + extension + " !")
-
-				with open(self.path + "/" + lesson_name + "/" + file_name + extension, "wb") as local:
-					for chunk in f.iter_content(chunk_size = 1024):
-						local.write(chunk)
+				fpath = self.path + "/" + lesson_name + "/" + file_name + extension
+				if (not os.path.exists(fpath)):
+					print("  New " + file_name + extension + " !")
+					with open(fpath, "wb") as local:
+						for chunk in f.iter_content(chunk_size = 1024):
+							local.write(chunk)
 
 
 def download():
