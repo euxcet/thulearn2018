@@ -2,6 +2,8 @@
 
 import requests, os, sys, re, json, time, getpass
 from bs4 import BeautifulSoup
+import tempfile
+
 
 class Learn():
 	def __init__(self):
@@ -10,7 +12,7 @@ class Learn():
 		self.session.headers = headers
 		self.url = "http://learn2018.tsinghua.edu.cn/"
 		self.semester = ""
-		self.temp_path = os.environ['TMP']
+		self.temp_path = tempfile.gettempdir()
 		self.user_file_name = 'thulearn2018-user.txt'
 		self.local_file_name = 'thulearn2018-local.txt'
 		self.path_file_name = 'thulearn2018-path.txt'
@@ -20,7 +22,7 @@ class Learn():
 		self.path_file_path = self.temp_path + os.sep + self.path_file_name
 
 		self.init_user()
-		self.check_save_path()
+		self.init_save_path()
 
 		# login and get current sememster
 		self.login()
@@ -64,7 +66,7 @@ class Learn():
 			sf = open(self.local_file_path, 'w')
 			sf.close()
 
-	def check_save_path(self):
+	def init_save_path(self):
 		try:
 			f = open(self.path_file_path, 'r')
 			self.path = f.readlines()[0].replace('\n', '').replace('\r', '')
@@ -76,6 +78,24 @@ class Learn():
 			sf = open(self.path_file_path, 'w')
 			print(self.path, file = sf)
 			sf.close()
+
+	def reset_user(self):
+		print("Enter your username: ")
+		self.username = input()
+		print("Enter your password: ")
+		self.password = getpass.getpass()
+
+		sf = open(self.user_file_path, 'w')
+		print(self.username, file = sf)
+		print(self.password, file = sf)
+		sf.close()
+
+	def reset_save_path(self):
+		print("Enter the directory to save documents for this semester: ")
+		self.path = input()
+		sf = open(self.path_file_path, 'w')
+		print(self.path, file = sf)
+		sf.close()
 
 	def login(self):
 		# login
@@ -93,12 +113,14 @@ class Learn():
 	def set_semester(self):
 		# get semester
 		semester_url = self.url + "/b/kc/zhjw_v_code_xnxq/getCurrentAndNextSemester"
+		content = {}
 		try:
 			content = json.loads(self.session.get(semester_url).content)
 		except TypeError:
 			content = json.loads(bytes.decode(self.session.get(semester_url).content))
 		except Exception:
 			print("密码错误")
+			exit(1)
 
 		# use try!!!
 		if (content["message"] == "success"):
@@ -192,9 +214,12 @@ class Learn():
 						for chunk in f.iter_content(chunk_size = 1024):
 							local.write(chunk)
 
+def show_help():
+	print("usage: learn [-h] [-r] [-rp]")
+	print("\t-r\tReset username and password")
+	print("\t-rp\tReset the directory to save documents")
 
-def download():
-	learn = Learn()
+def download(learn):
 	lessons = learn.get_lessons()
 	for lesson in lessons:
 		print("Check " + lesson[1])
@@ -204,4 +229,13 @@ def download():
 
 
 if __name__ == "__main__":
-	download()
+	learn = Learn()
+	if (len(sys.argv) == 1):
+		download(learn)
+	elif (len(sys.argv) == 2):
+		if (sys.argv[1] == "reset" or sys.argv[1] == "-r"):
+			learn.reset_user()
+		if (sys.argv[1] == "-rp"):
+			learn.reset_save_path()
+		if (sys.argv[1] == "-h"):
+			show_help()
