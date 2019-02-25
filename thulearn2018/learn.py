@@ -1,6 +1,6 @@
 #-*- coding: UTF-8 -*-
 
-import requests, os, sys, re, json, time
+import requests, os, sys, re, json, time, getpass
 from bs4 import BeautifulSoup
 
 class Learn():
@@ -10,6 +10,14 @@ class Learn():
 		self.session.headers = headers
 		self.url = "http://learn2018.tsinghua.edu.cn/"
 		self.semester = ""
+		self.temp_path = os.environ['TMP']
+		self.user_file_name = 'thulearn2018-user.txt'
+		self.local_file_name = 'thulearn2018-local.txt'
+		self.path_file_name = 'thulearn2018-path.txt'
+
+		self.user_file_path = self.temp_path + os.sep + self.user_file_name
+		self.local_file_path = self.temp_path + os.sep + self.local_file_name
+		self.path_file_path = self.temp_path + os.sep + self.path_file_name
 
 		self.init_user()
 		self.check_save_path()
@@ -17,6 +25,8 @@ class Learn():
 		# login and get current sememster
 		self.login()
 		self.set_semester()
+		if(self.semester == ""):
+			return
 
 		self.init_lessons()
 		self.local = set()
@@ -24,45 +34,46 @@ class Learn():
 
 	def init_user(self):
 		try:
-			f = open("/tmp/thulearn2018-user.txt", "r")
+			f = open(self.user_file_path, 'r')
+			# f = open("/tmp/thulearn2018-user.txt", "r")
 			lines = f.readlines()
 			self.username = lines[0].replace('\n', '').replace('\r', '')
 			self.password = lines[1].replace('\n', '').replace('\r', '')
 			f.close()
-		
+
 		except:
 			print("Enter your username: ")
 			self.username = input()
 			print("Enter your password: ")
-			self.password = input()
+			self.password = getpass.getpass()
 
-			sf = open("/tmp/thulearn2018-user.txt", "w")
+			sf = open(self.user_file_path, 'w')
 			print(self.username, file = sf)
 			print(self.password, file = sf)
 			sf.close()
 
 	def init_local_files(self):
 		try:
-			f = open("/tmp/thulearn2018-local.txt", "r")
+			f = open(self.local_file_path, 'r')
 			lines = f.readlines()
 			for line in lines:
 				self.local.add(line.replace('\n', '').replace('\r', ''))
 			f.close()
 
 		except:
-			sf = open("/tmp/thulearn2018-local.txt", "w")
+			sf = open(self.local_file_path, 'w')
 			sf.close()
 
 	def check_save_path(self):
 		try:
-			f = open("/tmp/thulearn2018-path.txt", "r")
+			f = open(self.path_file_path, 'r')
 			self.path = f.readlines()[0].replace('\n', '').replace('\r', '')
 			f.close()
 
 		except:
 			print("Enter the directory to save documents for this semester: ")
 			self.path = input()
-			sf = open("/tmp/thulearn2018-path.txt", "w")
+			sf = open(self.path_file_path, 'w')
 			print(self.path, file = sf)
 			sf.close()
 
@@ -82,7 +93,12 @@ class Learn():
 	def set_semester(self):
 		# get semester
 		semester_url = self.url + "/b/kc/zhjw_v_code_xnxq/getCurrentAndNextSemester"
-		content = json.loads(self.session.get(semester_url).content)
+		try:
+			content = json.loads(self.session.get(semester_url).content)
+		except TypeError:
+			content = json.loads(bytes.decode(self.session.get(semester_url).content))
+		except Exception:
+			print("密码错误")
 
 		# use try!!!
 		if (content["message"] == "success"):
@@ -91,7 +107,11 @@ class Learn():
 	def get_lessons(self):
 		# get lesson id
 		lessons_url = self.url + "/b/wlxt/kc/v_wlkc_xs_xkb_kcb_extend/student/loadCourseBySemesterId/" + self.semester
-		lesson_json = json.loads(self.session.post(lessons_url).content)["resultList"]
+		try:
+			lesson_json = json.loads(self.session.post(lessons_url).content)["resultList"]
+		except TypeError:
+			lesson_json = json.loads(bytes.decode(self.session.post(lessons_url).content))["resultList"]
+
 		lessons = []
 
 		for lesson in lesson_json:
@@ -111,20 +131,24 @@ class Learn():
 		files_url = self.url + "b/wlxt/kj/wlkc_kjflb/student/pageList"
 
 		# lesson_id example "2018-2019-226ef84e7689589e90168990b99383064"
-		files = json.loads(self.session.post(files_url, data = {"wlkcid": lesson_id}).content)
+		try:
+			files = json.loads(self.session.post(files_url, data = {"wlkcid": lesson_id}).content)
+		except TypeError:
+			files = json.loads(bytes.decode(self.session.post(files_url, data = {"wlkcid": lesson_id}).content))
+
 		files_id = []
 
 		for row in files["object"]["rows"]:
 			files_id.append(row["id"])
 
 		return files_id
-		
+
 
 	def save_file_id(self, fid):
 		if (fid not in self.local):
 			self.local.add(fid)
 			try:
-				f = open("/tmp/thulearn2018-local.txt", "a")
+				f = open(self.local_file_path, 'a')
 				print(fid, file = f)
 				f.close()
 			except:
@@ -138,7 +162,10 @@ class Learn():
 		# lesson_id example "2018-2019-226ef84e7689589e90168990b99383064"
 		# file_id example "sjqy_26ef84e7689589e90168990b993830641"
 		file_url = self.url + "b/wlxt/kj/wlkc_kjxxb/student/kjxxb/" + lesson_id + "/" + file_id
-		files = json.loads(self.session.get(file_url).content)
+		try:
+			files = json.loads(self.session.get(file_url).content)
+		except TypeError:
+			files = json.loads(bytes.decode(self.session.get(file_url).content))
 		for f in files["object"]:
 			file_name = f[1]
 			#  fid example "2007990011_KJ_1548755901_04ee49a1-3a86-4b4e-841a-b5b55e789234_sjqy01-admin"
@@ -156,7 +183,7 @@ class Learn():
 			fname = "UNKNOWN"
 			if (f.headers["Content-Disposition"][:21] == "attachment; filename="):
 				fname, extension = os.path.splitext(f.headers["Content-Disposition"][22:-1])
-					
+
 			if (fname != "UNKNOWN"):
 				fpath = self.path + "/" + lesson_name + "/" + file_name + extension
 				if (not os.path.exists(fpath)):
