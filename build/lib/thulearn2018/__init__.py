@@ -1,1 +1,0 @@
-name = "thulearn2018"
