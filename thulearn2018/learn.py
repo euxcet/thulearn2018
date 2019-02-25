@@ -227,8 +227,7 @@ def download(learn):
 		for group in groups:
 			learn.download_files(lesson[0], lesson[1], group)
 
-
-if __name__ == "__main__":
+def main():
 	learn = Learn()
 	if (len(sys.argv) == 1):
 		download(learn)
@@ -239,3 +238,6 @@ if __name__ == "__main__":
 			learn.reset_save_path()
 		if (sys.argv[1] == "-h"):
 			show_help()
+
+if __name__ == "__main__":
+	main()
