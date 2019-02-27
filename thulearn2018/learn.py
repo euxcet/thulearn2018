@@ -166,6 +166,11 @@ class Learn():
 		return files_id
 
 
+	def file_id_exist(self, fid):
+		if (fid not in self.local):
+			return False
+		return True
+
 	def save_file_id(self, fid):
 		if (fid not in self.local):
 			self.local.add(fid)
@@ -178,6 +183,16 @@ class Learn():
 			return True
 		else:
 			return False
+
+	def size_format(size_b):
+		if(size_b < 1024):
+			return str(size_b) + 'B'
+		size_b /= 1024
+		if(size_b < 1024):
+			return str(size_b) + 'KB'
+		size_b /= 1024
+		if(size_b < 1024):
+			return str(size_b) + 'MB'
 
 	def download_files(self, lesson_id, lesson_name, file_id):
 		# download files
@@ -193,14 +208,16 @@ class Learn():
 			#  fid example "2007990011_KJ_1548755901_04ee49a1-3a86-4b4e-841a-b5b55e789234_sjqy01-admin"
 			fid = f[7]
 
-			if (not self.save_file_id(fid)):
+			if (self.file_id_exist(fid)):
 				continue
+			# if (not self.save_file_id(fid)):
+			# 	continue
 
 			download_before_url = self.url + "b/kc/wj_wjb/downloadFileBefore" + "?wjid=" + fid
 			download_url = self.url + "b/wlxt/kj/wlkc_kjxxb/student/downloadFile" + "?sfgk=0" + "&wjid=" + fid
 
 			page = self.session.get(download_before_url)
-			f = self.session.get(download_url)
+			f = self.session.get(download_url, stream=True)
 
 			fname = "UNKNOWN"
 			if (f.headers["Content-Disposition"][:21] == "attachment; filename="):
@@ -208,11 +225,24 @@ class Learn():
 
 			if (fname != "UNKNOWN"):
 				fpath = self.path + "/" + lesson_name + "/" + file_name + extension
+				total_size = int(f.headers['Content-Length'])
+				temp_size = 0
+				print("  New " + file_name + extension + " !")
 				if (not os.path.exists(fpath)):
-					print("  New " + file_name + extension + " !")
-					with open(fpath, "wb") as local:
-						for chunk in f.iter_content(chunk_size = 1024):
+					print("  Create " + file_name + extension)
+				else:
+					print("  Cover " + file_name + extension)
+				with open(fpath, "wb") as local:
+					for chunk in f.iter_content(chunk_size = 1024):
+						if chunk:
+							temp_size += len(chunk)
 							local.write(chunk)
+							local.flush()
+							done = int(50 * temp_size / total_size)
+							sys.stdout.write("\r[%s%s] %d%% %s/%s" % ('█' * done, ' ' * (50 - done), 100 * temp_size / total_size, size_format(temp_size), size_format(total_size)))
+							sys.stdout.flush()
+				print()
+				self.save_file_id(fid)
 
 def show_help():
 	print("usage: learn [-h] [-r] [-rp]")
