@@ -184,15 +184,15 @@ class Learn():
 		else:
 			return False
 
-	def size_format(size_b):
+	def size_format(self, size_b):
 		if(size_b < 1024):
-			return str(size_b) + 'B'
-		size_b /= 1024
-		if(size_b < 1024):
-			return str(size_b) + 'KB'
-		size_b /= 1024
-		if(size_b < 1024):
-			return str(size_b) + 'MB'
+			return "%.2f"%(size_b) + 'B'
+		elif(size_b < 1024 * 1024):
+			return "%.2f"%(size_b / 1024) + 'KB'
+		elif(size_b < 1024 * 1024 * 1024):
+			return "%.2f"%(size_b / 1024 / 1024) + 'MB'
+		elif(size_b > 1024 * 1024 * 1024 * 1024):
+			return "%.2f"%(size_b / 1024 / 1024 / 1024) + 'GB'
 
 	def download_files(self, lesson_id, lesson_name, file_id):
 		# download files
@@ -233,13 +233,13 @@ class Learn():
 				else:
 					print("  Cover " + file_name + extension)
 				with open(fpath, "wb") as local:
-					for chunk in f.iter_content(chunk_size = 1024):
+					for chunk in f.iter_content(chunk_size = 1024 * 10):
 						if chunk:
 							temp_size += len(chunk)
 							local.write(chunk)
 							local.flush()
 							done = int(50 * temp_size / total_size)
-							sys.stdout.write("\r[%s%s] %d%% %s/%s" % ('█' * done, ' ' * (50 - done), 100 * temp_size / total_size, size_format(temp_size), size_format(total_size)))
+							sys.stdout.write("\r[%s%s] %d%% %s/%s         \t" % ('█' * done, ' ' * (50 - done), 100 * temp_size / total_size, self.size_format(temp_size), self.size_format(total_size)))
 							sys.stdout.flush()
 				print()
 				self.save_file_id(fid)
