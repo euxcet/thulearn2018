@@ -1,7 +1,7 @@
 #-*- coding: UTF-8 -*-
 
 import sys, os
-from browser import Learn
+from . import browser
 
 def show_help():
 	print("usage:  learn <command>")
@@ -33,7 +33,7 @@ def upload(learn, upload_file_path):
 	learn.upload(xszyid, '.' + os.sep + upload_file_path)
 
 def main():
-	learn = Learn()
+	learn = browser.Learn()
 	if (len(sys.argv) == 1):
 		download(learn)
 	elif (len(sys.argv) == 2):

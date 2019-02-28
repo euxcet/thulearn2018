@@ -339,3 +339,9 @@ class Learn():
 			boundary = '----WebKitFormBoundaryTytyPd5kgvE3t0kW'
 		)
 		self.session.post(self.url + upload_api, data = m, headers = headers)
+
+def main():
+	pass
+
+if __name__ == "__main__":
+	main()
