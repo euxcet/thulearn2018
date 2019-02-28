@@ -260,7 +260,7 @@ class Learn():
 				boxbox0 = soup.find_all('div', class_ = "boxbox")[0]
 				hw_title = boxbox0.find_all('div', class_ = "right")[0].get_text().strip()
 				boxbox1 = soup.find_all('div', class_ = "boxbox")[1]
-				txt = boxbox0.get_text().replace('\t', '').split('\n') + boxbox1.get_text().replace('\t', '').split('\n') 
+				txt = boxbox0.get_text().replace('\t', '').split('\n') + ["截止日期"] + [hw["jzsjStr"]] +boxbox1.get_text().replace('\t', '').split('\n') 
 				hw_readme = ""
 				for line in txt:
 					l = line.strip()
