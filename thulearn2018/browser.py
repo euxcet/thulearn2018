@@ -257,9 +257,10 @@ class Learn():
 				url = self.url + "f/wlxt/kczy/zy/student/viewTj?wlkcid=" + lesson_id + "&sfgq=0&zyid=" + hw["zyid"] + "&xszyid=" + hw["xszyid"]
 				page = self.session.get(url)
 				soup = BeautifulSoup(page.content, "html.parser")
-				boxbox = soup.find_all('div', class_ = "boxbox")[0]
-				txt = boxbox.get_text().replace('\t', '').split('\n')
-				hw_title = boxbox.find_all('div', class_ = "right")[0].get_text().strip()
+				boxbox0 = soup.find_all('div', class_ = "boxbox")[0]
+				hw_title = boxbox0.find_all('div', class_ = "right")[0].get_text().strip()
+				boxbox1 = soup.find_all('div', class_ = "boxbox")[1]
+				txt = boxbox0.get_text().replace('\t', '').split('\n') + boxbox1.get_text().replace('\t', '').split('\n') 
 				hw_readme = ""
 				for line in txt:
 					l = line.strip()
@@ -273,17 +274,15 @@ class Learn():
 
 				hw_dir = self.path + os.sep + lesson_name + os.sep + "homework" + os.sep + hw_title
 
-				if(os.path.exists(hw_dir + os.sep + ".xszyid")):
-					continue
+				if (not os.path.exists(hw_dir + os.sep + ".xszyid")):
+					print("  Homework " + hw_title)
 
-				print("  Homework " + hw_title)
 				if (not os.path.exists(hw_dir)):
 					os.mkdir(hw_dir)
 				try:
-					if(not os.path.exists(hw_dir + os.sep + "README.md")):
-						f = open(hw_dir + os.sep + "README.md", 'w', encoding = 'utf-8')
-						f.write(hw_readme)
-						f.close()
+					f = open(hw_dir + os.sep + "README.md", 'w', encoding = 'utf-8')
+					f.write(hw_readme)
+					f.close()
 				except:
 					pass
 
