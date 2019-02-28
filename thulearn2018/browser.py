@@ -1,6 +1,10 @@
 import requests, os, sys, re, json, time, getpass
 import tempfile
 from bs4 import BeautifulSoup
+from collections import OrderedDict
+from urllib3 import encode_multipart_formdata
+from requests_toolbelt.multipart.encoder import MultipartEncoder
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 class Learn():
 	def __init__(self):
@@ -18,6 +22,8 @@ class Learn():
 		self.local_file_path = self.temp_path + os.sep + self.local_file_name
 		self.path_file_path = self.temp_path + os.sep + self.path_file_name
 
+
+		requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 		self.init_user()
 		self.init_save_path()
 
@@ -101,7 +107,7 @@ class Learn():
 	def login(self):
 		# login
 		form = { "i_user" : self.username, "i_pass" : self.password }
-		login_id = self.session.post("https://id.tsinghua.edu.cn/do/off/ui/auth/login/post/bb5df85216504820be7bba2b0ae1535b/0?/login.do", data = form)
+		login_id = self.session.post("https://id.tsinghua.edu.cn/do/off/ui/auth/login/post/bb5df85216504820be7bba2b0ae1535b/0?/login.do", data = form, verify = False)
 		soup = BeautifulSoup(login_id.content, "html.parser")
 		for a in soup.find_all('a'):
 			h = a.get('href')
@@ -232,60 +238,104 @@ class Learn():
 
 			if (fname != "UNKNOWN"):
 				fpath = self.path + os.sep + lesson_name + os.sep + "file" + os.sep + file_name + extension
-				total_size = int(f.headers['Content-Length'])
-				temp_size = 0
-				print("  New " + file_name + extension + " !")
-				if (not os.path.exists(fpath)):
-					print("  Create " + file_name + extension)
-				else:
-					print("  Cover " + file_name + extension)
-				with open(fpath, "wb") as local:
-					for chunk in f.iter_content(chunk_size = 1024 * 10):
-						if chunk:
-							temp_size += len(chunk)
-							local.write(chunk)
-							local.flush()
-							done = int(50 * temp_size / total_size)
-							sys.stdout.write("\r[%s%s] %d%% %s/%s         \t" % ('█' * done, ' ' * (50 - done), 100 * temp_size / total_size, self.size_format(temp_size), self.size_format(total_size)))
-							sys.stdout.flush()
-				print()
+				self.downloadto(fpath, f, file_name + extension, fid)
 				self.save_file_id(fid)
-
-
-
 
 	def homework(self, lesson_id, lesson_name):
 		title = ["作业内容及要求：", "本人提交的作业："]
 		subtitle = ["作业标题", "作业说明", "作业附件", "答案说明", "答案附件", "发布对象", "完成方式", "学号", "提交日期", "截止日期", "上交作业内容", "上交作业附件"]
 		form = "aoData=[{\"name\":\"wlkcid\",\"value\":\"" + lesson_id + "\"}]"
-		hws = self.session.get(self.url + "b/wlxt/kczy/zy/student/zyListYjwg?" + form)
-		for hw in json.loads(hws.content)["object"]["aaData"]:
-			url = self.url + "f/wlxt/kczy/zy/student/viewTj?wlkcid=" + lesson_id + "&sfgq=0&zyid=" + hw["zyid"] + "&xszyid=" + hw["xszyid"]
-			page = self.session.get(url)
-			soup = BeautifulSoup(page.content, "html.parser")
-			boxbox = soup.find_all('div', class_ = "boxbox")[0]
-			txt = boxbox.get_text().replace('\t', '').split('\n')
-			hw_title = boxbox.find_all('div', class_ = "right")[0].get_text().strip()
-			hw_readme = ""
-			for line in txt:
-				l = line.strip()
-				if (len(l) > 0):
-					if (l in subtitle):
-						hw_readme += "#### " + l + '\n'
-					elif (l in title):
-						hw_readme += "### " + l + '\n'
-					else:
-						hw_readme += l + '\n'
-
-			hw_dir = self.path + os.sep + lesson_name + os.sep + "homework" + os.sep + hw_title
-
-			print("  Homework " + hw_title)
-
-			if (not os.path.exists(hw_dir)):
-				os.mkdir(hw_dir)
+		api_list = ["b/wlxt/kczy/zy/student/zyListYjwg?", "b/wlxt/kczy/zy/student/zyListWj?"]
+		for api in api_list:
+			hws = self.session.get(self.url + api + form)
 			try:
-				f = open(hw_dir + os.sep + "README.md", 'w')
-				print(hw_readme, file = f)
-				f.close()
-			except:
-				pass
+				hws = json.loads(hws.content)
+			except TypeError:
+				hws = json.loads(bytes.decode(hws.content))
+
+			for hw in hws["object"]["aaData"]:
+				url = self.url + "f/wlxt/kczy/zy/student/viewTj?wlkcid=" + lesson_id + "&sfgq=0&zyid=" + hw["zyid"] + "&xszyid=" + hw["xszyid"]
+				page = self.session.get(url)
+				soup = BeautifulSoup(page.content, "html.parser")
+				boxbox = soup.find_all('div', class_ = "boxbox")[0]
+				txt = boxbox.get_text().replace('\t', '').split('\n')
+				hw_title = boxbox.find_all('div', class_ = "right")[0].get_text().strip()
+				hw_readme = ""
+				for line in txt:
+					l = line.strip()
+					if (len(l) > 0):
+						if (l in subtitle):
+							hw_readme += "#### " + l + '\n'
+						elif (l in title):
+							hw_readme += "### " + l + '\n'
+						else:
+							hw_readme += l + '\n'
+
+				hw_dir = self.path + os.sep + lesson_name + os.sep + "homework" + os.sep + hw_title
+
+				if(os.path.exists(hw_dir + os.sep + ".xszyid")):
+					continue
+
+				print("  Homework " + hw_title)
+				if (not os.path.exists(hw_dir)):
+					os.mkdir(hw_dir)
+				try:
+					if(not os.path.exists(hw_dir + os.sep + "README.md")):
+						f = open(hw_dir + os.sep + "README.md", 'w', encoding = 'utf-8')
+						f.write(hw_readme)
+						f.close()
+				except:
+					pass
+
+				if (not os.path.exists(hw_dir + os.sep + ".xszyid")):
+					with open(hw_dir + os.sep + ".xszyid", "w") as f:
+						f.write(hw["xszyid"])
+
+				annex = soup.find_all('div', class_ = 'list fujian clearfix')[0]
+				annex_url = annex.find_all('a')
+				if(len(annex_url) > 0):
+					annex_name = annex_url[0].get_text().strip()
+					download_url = self.url + annex_url[1].get('href')
+					annex_id = annex_url[1].get('href').split('/')[-1]
+					if(self.file_id_exist(annex_id)):
+						continue
+
+					annex_page = self.session.get(download_url, stream=True)
+					self.downloadto(hw_dir + os.sep + annex_name, annex_page, annex_name, annex_id)
+					self.save_file_id(annex_id)
+
+	def downloadto(self, save_path, file_page, file_name, file_id):
+		total_size = int(file_page.headers['Content-Length'])
+		temp_size = 0
+		print("  New " + file_name + " !")
+		if (not os.path.exists(save_path)):
+			print("  Create " + file_name)
+		else:
+			print("  Cover " + file_name)
+		with open(save_path, "wb") as local:
+			for chunk in file_page.iter_content(chunk_size = 1024 * 10):
+				if chunk:
+					temp_size += len(chunk)
+					local.write(chunk)
+					local.flush()
+					done = int(50 * temp_size / total_size)
+					sys.stdout.write("\r[%s%s] %d%% %s/%s         \t" % ('█' * done, ' ' * (50 - done), 100 * temp_size / total_size, self.size_format(temp_size), self.size_format(total_size)))
+					sys.stdout.flush()
+		print()
+
+	def upload(self, homework_id, file_path):
+		upload_api = 'b/wlxt/kczy/zy/student/tjzy'
+
+		# headers = self.session.headers + {"Content-Type" : "multipart/form-data; boundary=----WebKitFormBoundaryTytyPd5kgvE3t0kW"}
+		headers = {'Connection': 'keep-alive', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Mobile Safari/537.36',
+		 		'Content-Type':'multipart/form-data; boundary=----WebKitFormBoundaryTytyPd5kgvE3t0kW'}
+		m = MultipartEncoder(
+			fields = {
+				'fileupload' :(os.path.basename(file_path), open(file_path, 'rb'), 'application/octet-stream'),
+				'xszyid' : homework_id,
+				'isDeleted' : '0',
+				'zynr': ''
+			},
+			boundary = '----WebKitFormBoundaryTytyPd5kgvE3t0kW'
+		)
+		self.session.post(self.url + upload_api, data = m, headers = headers)

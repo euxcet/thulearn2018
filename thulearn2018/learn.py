@@ -1,6 +1,6 @@
 #-*- coding: UTF-8 -*-
 
-import sys
+import sys, os
 from browser import Learn
 
 def show_help():
@@ -18,8 +18,18 @@ def download(learn):
 			learn.download_files(lesson[0], lesson[1], group)
 		learn.homework(lesson[0], lesson[1])
 
-def upload(learn):
-	print("upload")
+def upload(learn, upload_file_path):
+	id_path = '.' + os.sep + ".xszyid"
+	if (not os.path.exists(id_path)):
+		print("Homwork Id Not Found!")
+		return
+	if (not os.path.exists('.' + os.sep + upload_file_path)):
+		print("Upload File Not Found!")
+		return
+	with open(id_path, 'r') as f:
+		xszyid = f.read().strip()
+	f.close()
+	learn.upload(xszyid, '.' + os.sep + upload_file_path)
 
 def main():
 	learn = Learn()
@@ -31,8 +41,9 @@ def main():
 			learn.reset_save_path()
 		if (sys.argv[1] == "clear"):
 			learn.clear_config()
+	elif (len(sys.argv) == 3):
 		if (sys.argv[1] == "upload"):
-			upload()
+			upload(learn, sys.argv[2])
 
 if __name__ == "__main__":
 	main()
