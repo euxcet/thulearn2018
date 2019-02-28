@@ -4,12 +4,13 @@ import sys, os
 from browser import Learn
 
 def show_help():
-	print("usage: learn <command>")
-	print("\treset\t\tReset configuration")
-	print("\tclear\t\tClear configuration")
+	print("usage:  learn <command>")
+	print("command:")
+	print("\treset\t\t\tReset configuration")
+	print("\tclear\t\t\tClear configuration")
+	print("\tupload YOURFILE\t\tUpload homework")
 
 def download(learn):
-# file
 	lessons = learn.get_lessons()
 	for lesson in lessons:
 		print("Check " + lesson[1])
@@ -41,9 +42,15 @@ def main():
 			learn.reset_save_path()
 		if (sys.argv[1] == "clear"):
 			learn.clear_config()
+		else:
+			show_help()
 	elif (len(sys.argv) == 3):
 		if (sys.argv[1] == "upload"):
 			upload(learn, sys.argv[2])
+		else:
+			show_help()
+	else:
+		show_help()
 
 if __name__ == "__main__":
 	main()

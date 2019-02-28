@@ -5,15 +5,16 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="thulearn2018",
-    version="1.1.1",
+    version="1.3.0",
     author="Chengchi Zhou, Yingtian Liu",
     author_email="zcc16@mails.tsinghua.edu.cn, liu-yt16@mails.tsinghua.edu.cn",
     description="Tools for Web Learning of Tsinghua University",
     long_description="Tools for Web Learning of Tsinghua University",
     long_description_content_type="text/markdown",
     url="https://github.com/euxcet/thulearn2018",
-    packages=setuptools.find_packages(),
-	install_requires=['requests>=2.18.4', 'bs4>=0.0.1', 'beautifulsoup4>=4.6.0'],
+    # packages=setuptools.find_packages(),
+    packages=["thulearn2018"],
+	install_requires=['requests>=2.18.4', 'bs4>=0.0.1', 'beautifulsoup4>=4.6.0', 'requests_toolbelt'],
 	entry_points={
         'console_scripts': [
             'learn = thulearn2018.learn:main',
