@@ -117,3 +117,4 @@ class FileManager():
                     	space = "  "
                     sys.stdout.write("\r[%s%s] %d%% %s/%s    \t" % ('█' * done, space * (30 - done), 100 * temp_size / total_size, utils.size_format(temp_size), utils.size_format(total_size)))
                     sys.stdout.flush()
+        print()
