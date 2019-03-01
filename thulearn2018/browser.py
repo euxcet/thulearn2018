@@ -4,6 +4,7 @@ from . import settings
 from . import filemanager
 from . import soup
 from . import jsonhelper
+from . import utils
 from bs4 import BeautifulSoup
 from collections import OrderedDict
 from urllib3 import encode_multipart_formdata
@@ -97,10 +98,12 @@ class Learn():
 				self.save_file_id(fid)
 
 	def download_homework(self, lesson_id, lesson_name):
+		ddls = []
 		for api in settings.homeworks_url(lesson_id):
 			for hw in self.jh.loads(self.get(api))["object"]["aaData"]:
 				content = self.get(settings.homework_url(lesson_id, hw))
 				hw_title, hw_readme = self.soup.parse_homework(content, hw)
+				ddls.append((lesson_name, hw_title, hw["jzsjStr"]))
 				hw_dir = self.path + os.sep + lesson_name + os.sep + "homework" + os.sep + hw_title
 				self.fm.init_homework(hw, hw_dir, hw_readme)
 
@@ -109,11 +112,24 @@ class Learn():
 					annex = self.session.get(download_url, stream=True)
 					self.fm.downloadto(hw_dir + os.sep + annex_name, annex, annex_name, annex_id)
 					self.save_file_id(annex_id)
+		return ddls
 
-
-	def upload(self, homework_id, file_path):
-		form = settings.upload_form(howework_id, file_path)
+	def upload(self, homework_id, file_path, message):
+		form = settings.upload_form(howework_id, file_path, message)
 		self.session.post(settings.upload_api, data = form, headers = upload_headers)
+		lessons = self.get_lessons()
+		for lesson in lessons:
+			self.download_homework(lesson[0], lesson[1])
+		print("done")
+
+	def get_ddl(self):
+		lessons = self.get_lessons()
+		ddls = []
+		for lesson in lessons:
+			ddls += self.download_homework(lesson[0], lesson[1])
+		ddls.sort(key = lambda x: x[2])
+		return [[ddl[0], ddl[1], ddl[2], utils.time_delta(ddl[2])] for ddl in ddls]
+
 
 def main():
 	pass

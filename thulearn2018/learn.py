@@ -1,56 +1,68 @@
 #-*- coding: UTF-8 -*-
 
-import sys, os
+import sys, os, click
 from . import browser
 
-def show_help():
-	print("usage:  learn <command>")
-	print("command:")
-	print("\treset\t\t\tReset configuration")
-	print("\tclear\t\t\tClear configuration")
-	print("\tupload YOURFILE\t\tUpload homework")
+learn = browser.Learn()
 
-def download(learn):
+@click.command(help = 'Download all course files')
+def download():
 	lessons = learn.get_lessons()
 	for lesson in lessons:
-		print("Check " + lesson[1])
+		click.echo("Check " + lesson[1])
 		groups = learn.get_files_id(lesson[0])
 		for group in groups:
 			learn.download_files(lesson[0], lesson[1], group)
 		learn.download_homework(lesson[0], lesson[1])
 
-def upload(learn, upload_file_path):
+@click.command(help = 'Reset configurations.')
+def reset():
+	learn.set_user()
+	learn.set_path()
+
+@click.command(help = 'Clear records of all downloaded files.')
+def clear():
+	learn.set_local()
+
+@click.command(help = 'Submit homework.')
+@click.argument('name')
+@click.option('-m', default = '', help = 'The message to submit')
+def submit(name, m):
 	id_path = '.' + os.sep + ".xszyid"
 	if (not os.path.exists(id_path)):
 		print("Homwork Id Not Found!")
 		return
-	if (not os.path.exists('.' + os.sep + upload_file_path)):
+	if (not os.path.exists('.' + os.sep + name)):
 		print("Upload File Not Found!")
 		return
 	with open(id_path, 'r') as f:
 		xszyid = f.read().strip()
 	f.close()
-	learn.upload(xszyid, '.' + os.sep + upload_file_path)
+	learn.upload(xszyid, '.' + os.sep + name, m)
 
+def align(string, length=0):
+	len_en = len(string)
+	len_utf8 = len(string.encode('utf-8'))
+	lent = len_en + (len_utf8 - len_en) // 2
+	return string + ' ' * (length - lent)
+
+@click.command()
+def ddl():
+	ddls = learn.get_ddl()
+	for ddl in ddls:
+		print(align(ddl[0][0:18], 25), align(ddl[1][0:20], 30) + ddl[3])
+
+
+@click.group()
 def main():
-	learn = browser.Learn()
-	if (len(sys.argv) == 1):
-		download(learn)
-	elif (len(sys.argv) == 2):
-		if (sys.argv[1] == "reset"):
-			learn.set_user()
-			learn.set_path()
-		if (sys.argv[1] == "clear"):
-			learn.set_local()
-		else:
-			show_help()
-	elif (len(sys.argv) == 3):
-		if (sys.argv[1] == "upload"):
-			upload(learn, sys.argv[2])
-		else:
-			show_help()
-	else:
-		show_help()
+	pass
+
+main.add_command(download)
+main.add_command(reset)
+main.add_command(clear)
+main.add_command(submit)
+main.add_command(ddl)
+
 
 if __name__ == "__main__":
 	main()

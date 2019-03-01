@@ -40,13 +40,13 @@ def homeworks_url(lesson_id):
 def homework_url(lesson_id, hw):
     return url + "f/wlxt/kczy/zy/student/viewTj?wlkcid=" + lesson_id + "&sfgq=0&zyid=" + hw["zyid"] + "&xszyid=" + hw["xszyid"]
 
-def upload_form(homework_id, file_path):
+def upload_form(homework_id, file_path, message):
     return MultipartEncoder(
         fields = {
             'fileupload' :(os.path.basename(file_path), open(file_path, 'rb'), 'application/octet-stream'),
             'xszyid' : homework_id,
             'isDeleted' : '0',
-            'zynr': ''
+            'zynr': message
         },
         boundary = '----WebKitFormBoundaryTytyPd5kgvE3t0kW'
     )
