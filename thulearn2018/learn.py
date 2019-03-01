@@ -17,7 +17,7 @@ def download(learn):
 		groups = learn.get_files_id(lesson[0])
 		for group in groups:
 			learn.download_files(lesson[0], lesson[1], group)
-		learn.homework(lesson[0], lesson[1])
+		learn.download_homework(lesson[0], lesson[1])
 
 def upload(learn, upload_file_path):
 	id_path = '.' + os.sep + ".xszyid"
@@ -38,10 +38,10 @@ def main():
 		download(learn)
 	elif (len(sys.argv) == 2):
 		if (sys.argv[1] == "reset"):
-			learn.reset_user()
-			learn.reset_save_path()
+			learn.set_user()
+			learn.set_path()
 		if (sys.argv[1] == "clear"):
-			learn.clear_config()
+			learn.set_local()
 		else:
 			show_help()
 	elif (len(sys.argv) == 3):
