@@ -7,8 +7,6 @@ from . import jsonhelper
 from . import utils
 from bs4 import BeautifulSoup
 from collections import OrderedDict
-from urllib3 import encode_multipart_formdata
-from requests_toolbelt.multipart.encoder import MultipartEncoder
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 class Learn():
@@ -115,8 +113,8 @@ class Learn():
 		return ddls
 
 	def upload(self, homework_id, file_path, message):
-		form = settings.upload_form(howework_id, file_path, message)
-		self.session.post(settings.upload_api, data = form, headers = upload_headers)
+		form = settings.upload_form(homework_id, file_path, message)
+		self.session.post(settings.upload_api, data = form, headers = settings.upload_headers)
 		lessons = self.get_lessons()
 		for lesson in lessons:
 			self.download_homework(lesson[0], lesson[1])

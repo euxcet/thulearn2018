@@ -25,14 +25,14 @@ def clear():
 	learn.set_local()
 
 @click.command(help = 'Submit homework.')
-@click.argument('name')
+@click.argument('name', default = '')
 @click.option('-m', default = '', help = 'The message to submit')
 def submit(name, m):
 	id_path = '.' + os.sep + ".xszyid"
 	if (not os.path.exists(id_path)):
 		print("Homwork Id Not Found!")
 		return
-	if (not os.path.exists('.' + os.sep + name)):
+	if (name != '' and not os.path.exists('.' + os.sep + name)):
 		print("Upload File Not Found!")
 		return
 	with open(id_path, 'r') as f:
