@@ -1,6 +1,7 @@
 from . import settings
 from . import utils
 import platform
+import getpass
 import os, sys
 
 class FileManager():
@@ -59,7 +60,7 @@ class FileManager():
         print("Enter the directory to save documents for this semester: ")
         path = input()
         sf = open(settings.path_file_path, 'w')
-        print(self.path, file = sf)
+        print(path, file = sf)
         sf.close()
         return path
 
