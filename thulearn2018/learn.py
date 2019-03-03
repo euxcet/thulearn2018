@@ -50,7 +50,7 @@ def align(string, length=0):
 def ddl():
 	ddls = learn.get_ddl()
 	for ddl in ddls:
-		print(align(ddl[0][0:18], 25), align(ddl[1][0:20], 30) + align(ddl[3][0:20], 25), ddl[4])
+		print(align(ddl[0][0:18], 25), align(ddl[1][0:20], 30) + align(ddl[3][0:25], 30), ddl[4])
 
 
 @click.group()
