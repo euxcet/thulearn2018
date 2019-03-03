@@ -101,9 +101,9 @@ class Learn():
 			for hw in self.jh.loads(self.get(api))["object"]["aaData"]:
 				content = self.get(settings.homework_url(lesson_id, hw))
 				hw_title, hw_readme = self.soup.parse_homework(content, hw)
-				ddls.append((lesson_name, hw_title, hw["jzsjStr"]))
+				ddls.append((lesson_name, hw_title, hw["jzsjStr"], hw["zt"]))
 				hw_dir = self.path + os.sep + lesson_name + os.sep + "homework" + os.sep + hw_title
-				self.fm.init_homework(hw, hw_dir, hw_readme)
+				self.fm.init_homework(hw, hw_dir, hw_title, hw_readme)
 
 				annex_name, download_url, annex_id = self.soup.parse_annex(content)
 				if (annex_name != "NONE" and not self.file_id_exist(annex_id)):
@@ -126,8 +126,7 @@ class Learn():
 		for lesson in lessons:
 			ddls += self.download_homework(lesson[0], lesson[1])
 		ddls.sort(key = lambda x: x[2])
-		return [[ddl[0], ddl[1], ddl[2], utils.time_delta(ddl[2])] for ddl in ddls]
-
+		return [[ddl[0], ddl[1], ddl[2], utils.time_delta(ddl[2]), ddl[3]] for ddl in ddls]
 
 def main():
 	pass

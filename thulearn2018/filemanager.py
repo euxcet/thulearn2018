@@ -80,7 +80,7 @@ class FileManager():
             f.close()
         except:
             pass
-    def init_homework(self, hw, hw_dir, hw_readme):
+    def init_homework(self, hw, hw_dir, hw_title, hw_readme):
         if (not os.path.exists(hw_dir + os.sep + ".xszyid")):
             print("  Homework " + hw_title)
 

@@ -46,11 +46,11 @@ def align(string, length=0):
 	lent = len_en + (len_utf8 - len_en) // 2
 	return string + ' ' * (length - lent)
 
-@click.command()
+@click.command(help = 'Show homework deadlines.')
 def ddl():
 	ddls = learn.get_ddl()
 	for ddl in ddls:
-		print(align(ddl[0][0:18], 25), align(ddl[1][0:20], 30) + ddl[3])
+		print(align(ddl[0][0:18], 25), align(ddl[1][0:20], 30) + align(ddl[3][0:20], 25), ddl[4])
 
 
 @click.group()
