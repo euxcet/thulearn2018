@@ -1,4 +1,5 @@
 import tempfile, os
+from pathlib import Path
 from urllib3 import encode_multipart_formdata
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
@@ -8,10 +9,11 @@ upload_headers = {'Connection': 'keep-alive', 'Accept-Encoding': 'gzip, deflate'
 
 url = "http://learn2018.tsinghua.edu.cn/"
 
-user_file_name = 'thulearn2018-user.txt'
-local_file_name = 'thulearn2018-local.txt'
-path_file_name = 'thulearn2018-path.txt'
-temp_path = tempfile.gettempdir()
+user_file_name = '.thulearn2018-user.txt'
+local_file_name = '.thulearn2018-local.txt'
+path_file_name = '.thulearn2018-path.txt'
+temp_path = str(Path.home())
+#temp_path = tempfile.gettempdir()
 user_file_path = temp_path + os.sep + user_file_name
 local_file_path = temp_path + os.sep + local_file_name
 path_file_path = temp_path + os.sep + path_file_name
