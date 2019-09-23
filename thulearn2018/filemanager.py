@@ -98,7 +98,11 @@ class FileManager():
                 f.write(hw["xszyid"])
 
     def downloadto(self, save_path, file_page, file_name, file_id):
-        total_size = int(file_page.headers['Content-Length'])
+        total_size = 0
+        try:
+            total_size = int(file_page.headers['Content-Length'])
+        except:
+            pass
         temp_size = 0
         print("  New " + file_name + " !")
         if (not os.path.exists(save_path)):
@@ -111,10 +115,15 @@ class FileManager():
                     temp_size += len(chunk)
                     local.write(chunk)
                     local.flush()
-                    done = int(30 * temp_size / total_size)
-                    space = " "
-                    if (platform.system() == "Windows"):
-                    	space = "  "
-                    sys.stdout.write("\r[%s%s] %d%% %s/%s    \t" % ('█' * done, space * (30 - done), 100 * temp_size / total_size, utils.size_format(temp_size), utils.size_format(total_size)))
-                    sys.stdout.flush()
+                    if (total_size != 0):
+                        done = int(30 * temp_size / total_size)
+                        space = " "
+                        if (platform.system() == "Windows"):
+                        	space = "  "
+                        sys.stdout.write("\r[%s%s] %d%% %s/%s    \t" % ('█' * done, space * (30 - done), 100 * temp_size / total_size, utils.size_format(temp_size), utils.size_format(total_size)))
+                        sys.stdout.flush()
+                    else:
+                        sys.stdout.write("\r\t%s/UNKNOWN    \t" % (utils.size_format(temp_size)))
+                        sys.stdout.flush()
+
         print()
