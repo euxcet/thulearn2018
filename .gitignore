@@ -4,3 +4,4 @@ thulearn2018.egg-info/*
 *.pyc
 __pycache__/*
 build/*
+*.swp
