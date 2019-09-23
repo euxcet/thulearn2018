@@ -102,7 +102,8 @@ class Learn():
 				content = self.get(settings.homework_url(lesson_id, hw))
 				hw_title, hw_readme = self.soup.parse_homework(content, hw)
 				ddls.append((lesson_name, hw_title, hw["jzsjStr"], hw["zt"]))
-				hw_dir = self.path + os.sep + lesson_name + os.sep + "homework" + os.sep + hw_title
+
+				hw_dir = self.path + os.sep + lesson_name + os.sep + "homework" + os.sep + re.sub(r"[\:\*\?\<\>\|]+", "_", hw_title)
 				self.fm.init_homework(hw, hw_dir, hw_title, hw_readme)
 
 				annex_name, download_url, annex_id = self.soup.parse_annex(content)
