@@ -9,6 +9,7 @@ class FileManager():
         pass
 
     def mkdir(self, name):
+        name = re.sub(r"[\:\*\?\<\>\|]+", "_", name)
         if not os.path.exists(name):
             os.mkdir(name)
 
