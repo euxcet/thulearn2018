@@ -49,6 +49,7 @@ def align(string, length=0):
 @click.command(help = 'Show homework deadlines.')
 def ddl():
 	ddls = learn.get_ddl()
+	print(f'Total {len(ddls)} ddl(s)')
 	for ddl in ddls:
 		print(align(ddl[0][0:8], 25), align(ddl[1][0:20], 30) + align(ddl[3][0:20], 30), ddl[4])
 

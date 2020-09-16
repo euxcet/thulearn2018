@@ -10,7 +10,8 @@ class FileManager():
 
     def mkdir(self, name):
         if not os.path.exists(name):
-            os.mkdir(name)
+            # os.mkdir(name)
+            os.makedirs(name)
 
     def mkdirl(self, name):
         self.mkdir(name)
