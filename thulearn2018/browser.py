@@ -37,6 +37,12 @@ class Learn():
 
 	def set_local(self):
 		self.fm.set_local()
+	
+	def get_path(self):
+		return self.fm.get_path()
+
+	def get_user(self):
+		return self.fm.get_user()
 
 	def post(self, url, form = {}):
 		return self.session.post(url, data = form ,verify = False).content
