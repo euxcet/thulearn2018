@@ -96,7 +96,13 @@ class Learn():
             if (not self.file_id_exist(fid)):
                 self.get(settings.download_before_url(fid))
                 fs = self.session.get(settings.download_url(fid), stream=True)
-                fname, extension = os.path.splitext(fs.headers["Content-Disposition"][22:-1])
+                if 'Content-Disposition' in fs.headers:
+                    fname, extension = os.path.splitext(fs.headers["Content-Disposition"][22:-1])
+                elif 'ETag' in fs.headers:
+                    fname, extension = os.path.splitext(fs.headers['ETag'])
+                else:
+                    print('not found name')
+                    exit(0)
                 # fix special character that exists in filename
                 real_filename = re.sub(r'[\:\*\?\<\>\|\\/]', '_', f[1])
                 fpath = self.path + os.sep + lesson_name + os.sep + "file" + os.sep + real_filename + extension
