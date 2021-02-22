@@ -24,6 +24,7 @@ class Learn():
         self.soup = soup.Soup()
         self.jh = jsonhelper.JsonHelper()
 
+    def init(self):
         # login and get current sememster
         self.login()
         self.set_semester()

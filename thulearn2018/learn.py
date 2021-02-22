@@ -7,6 +7,7 @@ learn = browser.Learn()
 
 @click.command(help = 'Download all course files')
 def download():
+	learn.init()
 	lessons = learn.get_lessons()
 	for lesson in lessons:
 		click.echo("Check " + lesson[1])
@@ -36,6 +37,7 @@ def clear():
 @click.argument('name', default = '')
 @click.option('-m', default = '', help = 'The message to submit')
 def submit(name, m):
+	learn.init()
 	id_path = '.' + os.sep + ".xszyid"
 	if (not os.path.exists(id_path)):
 		print("Homwork Id Not Found!")
@@ -56,6 +58,7 @@ def align(string, length=0):
 
 @click.command(help = 'Show homework deadlines.')
 def ddl():
+	learn.init()
 	ddls = learn.get_ddl()
 	print('Total %d ddl(s)' % (len(ddls)))
 	for ddl in ddls:
