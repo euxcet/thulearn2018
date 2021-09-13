@@ -7,7 +7,8 @@ headers = {'Connection': 'keep-alive', 'Accept-Encoding': 'gzip, deflate', 'Acce
 upload_headers = {'Connection': 'keep-alive', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Mobile Safari/537.36',
  		'Content-Type':'multipart/form-data; boundary=----WebKitFormBoundaryTytyPd5kgvE3t0kW'}
 
-url = "http://learn2018.tsinghua.edu.cn/"
+# url = "http://learn2018.tsinghua.edu.cn/"
+url = "http://learn.tsinghua.edu.cn/"
 
 user_file_name = '.thulearn2018-user.txt'
 local_file_name = '.thulearn2018-local.txt'
@@ -20,9 +21,10 @@ path_file_path = temp_path + os.sep + path_file_name
 
 login_id_url = "https://id.tsinghua.edu.cn/do/off/ui/auth/login/post/bb5df85216504820be7bba2b0ae1535b/0?/login.do"
 login_url = url + "b/j_spring_security_thauth_roaming_entry"
-semester_url = url + "/b/kc/zhjw_v_code_xnxq/getCurrentAndNextSemester"
+semester_url = url + "b/kc/zhjw_v_code_xnxq/getCurrentAndNextSemester"
 files_url = url + "b/wlxt/kj/wlkc_kjflb/student/pageList"
 upload_api = url + 'b/wlxt/kczy/zy/student/tjzy'
+
 
 def file_url(lesson_id, file_id):
     return url + "b/wlxt/kj/wlkc_kjxxb/student/kjxxb/" + lesson_id + "/" + file_id

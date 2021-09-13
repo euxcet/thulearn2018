@@ -45,23 +45,31 @@ class Learn():
     def get_user(self):
         return self.fm.get_user()
 
-    def post(self, url, form = {}):
-        return self.session.post(url, data = form ,verify = False).content
+    def post(self, url, form={}, csrf=True):
+        if csrf:
+            params = {
+                '_csrf': self.session.cookies.get_dict()['XSRF-TOKEN']
+            }
+            return self.session.post(url, data=form, params=params, verify=False).content
+        else:
+            return self.session.post(url, data=form, verify = False).content
 
-    def get(self, url):
-        return self.session.get(url).content
+    def get(self, url, params={}, csrf=True):
+        if csrf:
+            params.update({
+                '_csrf': self.session.cookies.get_dict()['XSRF-TOKEN']
+            })
+        return self.session.get(url, params=params).content
 
     def login(self):
         form = { "i_user" : self.username, "i_pass" : self.password }
-        content = self.post(settings.login_id_url, form)
+        content = self.post(settings.login_id_url, form, csrf=False)
         ticket = self.soup.parse_ticket(content)
-        self.post(settings.login_url + ticket)
+        self.post(settings.login_url + ticket, csrf=False)
 
     def set_semester(self):
         content = self.jh.loads(self.get(settings.semester_url))
         self.semester = content["result"]["id"]
-
-
 
     #-------------------------------------------------------------------------------------------
     def get_lessons(self):
@@ -74,10 +82,10 @@ class Learn():
             self.fm.mkdirl(self.path + os.sep + lesson[1])
 
     def get_files_id(self, lesson_id):
-        # lesson_id example "2018-2019-226ef84e7689589e90168990b99383064"
         form = {"wlkcid": lesson_id}
-        files = self.jh.loads(self.post(settings.files_url, form))
-        files_id = [ row["id"] for row in files["object"]["rows"] ]
+        files = self.jh.loads(self.get(settings.files_url, params=form))
+        files_id = [row["id"] for row in files["object"]["rows"] ]
+
         return files_id
 
     def file_id_exist(self, fid):
