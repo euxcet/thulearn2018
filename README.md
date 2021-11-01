@@ -51,7 +51,7 @@ Now you could
   learn submit /path/to/your/homework/file -m "the text message you want to submit."
   ```
 
-  **Notice: This command must be excuted at the homework directory where a file named `.xszyid` exists. **
+  **Notice: This command must be excuted at the homework directory where a file named `.xszyid` exists.**
 
 - clear all the record of your course files and homeworks
 
@@ -63,7 +63,7 @@ Now you could
 
 
 
-## Welcome your contribution
+## Feel free to contribute yourself
 
 :heavy_check_mark: Use this package
 
