@@ -23,7 +23,7 @@ For login authentication, please run
 learn reset
 ```
 
-to set or reset your personal configuration, such as the username/password for web learning and the absolute path where you want to save your course directories. **Notice: The username/password is saved to a local file in your temp directory, depending on your OS and won't be uploaded to anywhere online except the web learning.** You could reset the configuration  by rerun the command. Anytime you want to check the config, just run 
+to set or reset your personal configuration, such as the username/password for web learning and the absolute path where you want to save your course directories. **Notice: The username/password is saved to a local file in your temp directory, depending on your OS and won't be uploaded to anywhere online except the web learning.** You could reset the configuration by rerunning the command. Anytime you want to check the config, just run 
 
 ```
 learn config
