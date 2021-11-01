@@ -59,7 +59,7 @@ Now you could
   learn clear
   ```
 
-  This command will **not** delete the exist files. It means the next time you try to download course files, all the files will be redownloaded, no matter whether you have downloaded them. 
+  This command will **not** delete the existing files. It means the next time you try to download course files, all the files will be redownloaded, no matter whether you have downloaded them. 
 
 
 
