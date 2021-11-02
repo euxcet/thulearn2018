@@ -52,6 +52,7 @@ Now you could
   ```
 
   **Notice: This command must be excuted at the homework directory where a file named `.xszyid` exists.**
+  If you do not want to upload any text/file, just omit the `-m` option/the parameter following `submit`. 
 
 - clear all the record of your course files and homeworks
 
@@ -60,7 +61,6 @@ Now you could
   ```
 
   This command will **not** delete the existing files. It means the next time you try to download course files, all the files will be redownloaded, no matter whether you have downloaded them. 
-
 
 
 ## Feel free to contribute yourself

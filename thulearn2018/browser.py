@@ -15,7 +15,6 @@ class Learn():
         self.session = requests.Session()
         self.session.headers = settings.headers
 
-
         self.fm = filemanager.FileManager()
         self.username, self.password = self.fm.get_user()
         self.path = self.fm.get_path()
@@ -45,14 +44,14 @@ class Learn():
     def get_user(self):
         return self.fm.get_user()
 
-    def post(self, url, form={}, csrf=True):
+    def post(self, url, form={}, csrf=True, headers=None):
         if csrf:
             params = {
                 '_csrf': self.session.cookies.get_dict()['XSRF-TOKEN']
             }
-            return self.session.post(url, data=form, params=params, verify=False).content
+            return self.session.post(url, data=form, params=params, verify=False, headers=headers).content
         else:
-            return self.session.post(url, data=form, verify = False).content
+            return self.session.post(url, data=form, verify = False, headers=headers).content
 
     def get(self, url, params={}, csrf=True):
         if csrf:
@@ -138,7 +137,7 @@ class Learn():
 
     def upload(self, homework_id, file_path, message):
         form = settings.upload_form(homework_id, file_path, message)
-        self.session.post(settings.upload_api, data = form, headers = settings.upload_headers)
+        self.post(settings.upload_api, form=form, headers=settings.upload_headers)
         lessons = self.get_lessons()
         for lesson in lessons:
             self.download_homework(lesson[0], lesson[1])

@@ -8,7 +8,7 @@ upload_headers = {'Connection': 'keep-alive', 'Accept-Encoding': 'gzip, deflate'
  		'Content-Type':'multipart/form-data; boundary=----WebKitFormBoundaryTytyPd5kgvE3t0kW'}
 
 # url = "http://learn2018.tsinghua.edu.cn/"
-url = "http://learn.tsinghua.edu.cn/"
+url = "https://learn.tsinghua.edu.cn/"
 
 user_file_name = '.thulearn2018-user.txt'
 local_file_name = '.thulearn2018-local.txt'
