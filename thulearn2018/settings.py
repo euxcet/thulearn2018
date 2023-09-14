@@ -30,7 +30,7 @@ def file_url(lesson_id, file_id):
     return url + "b/wlxt/kj/wlkc_kjxxb/student/kjxxb/" + lesson_id + "/" + file_id
 
 def lessons_url(semester):
-    return url + "/b/wlxt/kc/v_wlkc_xs_xkb_kcb_extend/student/loadCourseBySemesterId/" + semester
+    return url + "b/wlxt/kc/v_wlkc_xs_xkb_kcb_extend/student/loadCourseBySemesterId/" + semester + "/en"
 
 def download_before_url(fid):
     return url + "b/kc/wj_wjb/downloadFileBefore?wjid=" + fid
