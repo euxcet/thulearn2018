@@ -6,15 +6,16 @@ from . import browser
 learn = browser.Learn()
 
 @click.command(help = 'Download all course files')
-def download():
+@click.option('-i', default = '', help = 'Ignored courses')
+def download(i):
 	learn.init()
-	lessons = learn.get_lessons()
+	lessons = learn.init_lessons(i)
 	for lesson in lessons:
-		click.echo("Check " + lesson[1])
+		click.echo("Check " + lesson[4])
 		groups = learn.get_files_id(lesson[0])
 		for group in groups:
-			learn.download_files(lesson[0], lesson[1], group)
-		learn.download_homework(lesson[0], lesson[1])
+			learn.download_files(lesson[0], lesson[4], group)
+		learn.download_homework(lesson[0], lesson[4])
 
 @click.command(help = 'Reset configurations.')
 def reset():
@@ -57,9 +58,10 @@ def align(string, length=0):
 	return string + ' ' * (length - lent)
 
 @click.command(help = 'Show homework deadlines.')
-def ddl():
+@click.option('-i', default = '', help = 'Ignored courses')
+def ddl(i):
 	learn.init()
-	ddls = learn.get_ddl()
+	ddls = learn.get_ddl(learn.init_lessons(i))
 	print('Total %d ddl(s)' % (len(ddls)))
 	for ddl in ddls:
 		print(align(ddl[0][0:8], 25), align(ddl[1][0:20], 30) + align(ddl[3][0:20], 30), ddl[4])

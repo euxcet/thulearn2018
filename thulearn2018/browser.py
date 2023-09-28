@@ -27,7 +27,6 @@ class Learn():
         # login and get current sememster
         self.login()
         self.set_semester()
-        self.init_lessons()
 
     def set_user(self):
         self.fm.set_user()
@@ -72,11 +71,11 @@ class Learn():
         self.semester = content["result"]["id"]
 
     #-------------------------------------------------------------------------------------------
-    def get_lessons(self):
+    def get_lessons(self, ignore=[]):
         content = self.jh.loads(self.post(settings.lessons_url(self.semester)))
         
         # first sort by lesson name, then sort by teacher name
-        lessons = [[x["wlkcid"], x["kcm"], x["jsm"], x["kch"]] for x in content["resultList"]]
+        lessons = [[x["wlkcid"], x["kcm"], x["jsm"], x["kch"]] for x in content["resultList"] if x["kcm"] not in ignore]
         
         lessons.sort(key=lambda x: (x[1], x[2]))
         
@@ -98,11 +97,12 @@ class Learn():
 
         return lessons
 
-    def init_lessons(self):
-        lessons = self.get_lessons()
+    def init_lessons(self, ignore_list):
+        lessons = self.get_lessons(ignore_list)
         
         for i in range(len(lessons)):
             self.fm.mkdirl(self.path + os.sep + lessons[i][4])
+        return lessons
 
     def get_files_id(self, lesson_id):
         form = {"wlkcid": lesson_id}
@@ -162,13 +162,9 @@ class Learn():
     def upload(self, homework_id, file_path, message):
         form = settings.upload_form(homework_id, file_path, message)
         self.post(settings.upload_api, form=form, headers=settings.upload_headers)
-        lessons = self.get_lessons()
-        for lesson in lessons:
-            self.download_homework(lesson[0], lesson[4])
         print("done")
 
-    def get_ddl(self):
-        lessons = self.get_lessons()
+    def get_ddl(self, lessons):
         ddls = []
         for lesson in lessons:
             ddls += self.download_homework(lesson[0], lesson[4])
