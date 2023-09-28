@@ -51,6 +51,7 @@ class Learn():
             }
             return self.session.post(url, data=form, params=params, verify=False, headers=headers).content
         else:
+            self.session.trust_env = False
             return self.session.post(url, data=form, verify = False, headers=headers).content
 
     def get(self, url, params={}, csrf=True):
@@ -73,12 +74,35 @@ class Learn():
     #-------------------------------------------------------------------------------------------
     def get_lessons(self):
         content = self.jh.loads(self.post(settings.lessons_url(self.semester)))
-        lessons = [(x["wlkcid"], x["kcm"]) for x in content["resultList"]]
+        
+        # first sort by lesson name, then sort by teacher name
+        lessons = [[x["wlkcid"], x["kcm"], x["jsm"], x["kch"]] for x in content["resultList"]]
+        
+        lessons.sort(key=lambda x: (x[1], x[2]))
+        
+        # create a helper function to determine the folder name
+        for i in range(len(lessons)):
+            _, kcm, jsm, kch = lessons[i]
+            
+            # check the previous and next lesson to determine the naming method of the current lesson
+            prev_lesson = lessons[i-1] if i-1 >= 0 else None
+            next_lesson = lessons[i+1] if i+1 < len(lessons) else None
+            
+            if (prev_lesson is None or prev_lesson[1] != kcm) and (next_lesson is None or next_lesson[1] != kcm):
+                lessons[i].append(kcm)
+            
+            if (prev_lesson is None or prev_lesson[1] != kcm or prev_lesson[2] != jsm) and (next_lesson is None or next_lesson[1] != kcm or next_lesson[2] != jsm):
+                lessons[i].append(f"{kcm}_{jsm}")
+            
+            lessons[i][4].append(f"{kcm}_{kch}")
+
         return lessons
 
     def init_lessons(self):
-        for lesson in self.get_lessons():
-            self.fm.mkdirl(self.path + os.sep + lesson[1])
+        lessons = self.get_lessons()
+        
+        for i in range(len(lessons)):
+            self.fm.mkdirl(self.path + os.sep + lessons[i][4])
 
     def get_files_id(self, lesson_id):
         form = {"wlkcid": lesson_id}
@@ -140,14 +164,14 @@ class Learn():
         self.post(settings.upload_api, form=form, headers=settings.upload_headers)
         lessons = self.get_lessons()
         for lesson in lessons:
-            self.download_homework(lesson[0], lesson[1])
+            self.download_homework(lesson[0], lesson[4])
         print("done")
 
     def get_ddl(self):
         lessons = self.get_lessons()
         ddls = []
         for lesson in lessons:
-            ddls += self.download_homework(lesson[0], lesson[1])
+            ddls += self.download_homework(lesson[0], lesson[4])
         ddls.sort(key = lambda x: x[2])
         return [[ddl[0], ddl[1], ddl[2], utils.time_delta(ddl[2]), ddl[3]] for ddl in ddls]
 
