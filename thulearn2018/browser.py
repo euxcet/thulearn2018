@@ -94,7 +94,7 @@ class Learn():
             if (prev_lesson is None or prev_lesson[1] != kcm or prev_lesson[2] != jsm) and (next_lesson is None or next_lesson[1] != kcm or next_lesson[2] != jsm):
                 lessons[i].append(f"{kcm}_{jsm}")
             
-            lessons[i][4].append(f"{kcm}_{kch}")
+            lessons[i].append(f"{kcm}_{kch}")
 
         return lessons
 
