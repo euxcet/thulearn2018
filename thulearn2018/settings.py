@@ -22,8 +22,13 @@ elif (os.name == 'posix'):
         "XDG_CONFIG_HOME", os.path.expanduser("~/.config")), "thulearn2018")
 else:
     temp_path = Path.home()
+
 if (not os.path.exists(temp_path)):
     os.makedirs(temp_path)
+    for file_name in [user_file_name, local_file_name, path_file_name]:
+        old_file_path = os.path.join(Path.home(), ".thulearn2018-"+file_name)
+        if (os.path.exists(old_file_path)):
+            os.rename(old_file_path, os.path.join(temp_path, file_name))
 
 user_file_path = os.path.join(temp_path, user_file_name)
 local_file_path = os.path.join(temp_path, local_file_name)
