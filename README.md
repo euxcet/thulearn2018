@@ -7,6 +7,12 @@ Tools for Web Learning of Tsinghua University.
 pip install thulearn2018
 ```
 
+Or install the lastest version from GitHub:
+
+```bash
+pip install git+https://github.com/euxcet/thulearn2018.git
+```
+
 ## User Guide
 
 After installing the package, you will get the command `learn` . Check this by running 
