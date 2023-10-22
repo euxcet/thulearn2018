@@ -17,7 +17,7 @@ pip install git+https://github.com/euxcet/thulearn2018.git
 
 After installing the package, you will get the command `learn` . Check this by running 
 
-```
+```bash
 learn --help
 ```
 
@@ -27,11 +27,15 @@ This will show all the subcommands you can use basically, including downloading 
 
 For login authentication, please run 
 
-```
+```bash
 learn reset
 ```
 
-to set or reset your personal configuration, including the username/password for web learning and the absolute path where you want to save your courses in the **current semester**. If you'd like to download from past semesters, always remember to customize the target directory unless the default one is preferred. ==Notice: The username/password is saved to a local file in your temp directory, depending on your OS and won't be uploaded to anywhere online except the web learning.== You could reset the configuration by rerunning the command. Anytime you want to check the config, just run 
+to set or reset your personal configuration, including the username/password for web learning and the absolute path where you want to save your courses in the **current semester**. If you'd like to download from past semesters, always remember to customize the target directory unless the default one is preferred.
+
+**Notice: The username/password is saved to a local file in your temp directory, depending on your OS and won't be uploaded to anywhere online except the web learning.**
+
+Anytime you want to check the config, just run 
 
 ```bash
 learn config
