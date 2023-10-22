@@ -78,7 +78,7 @@ class Learn():
                    settings.local_file_path)
         self.local = self.fm.get_local()
 
-    # -------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     def get_lessons(self, ignore=[]):
         content = self.jh.loads(self.post(settings.lessons_url(self.semester)))
         
@@ -164,7 +164,9 @@ class Learn():
             for hw in self.jh.loads(self.get(api))["object"]["aaData"]:
                 content = self.get(settings.homework_url(lesson_id, hw))
                 hw_title, hw_readme = self.soup.parse_homework(content, hw)
-                ddls.append((lesson_name, hw_title, hw["jzsjStr"], hw["zt"]))
+                ddls.append((lesson_name, hw_title, hw["jzsjStr"], hw["wjmc"]+\
+                             "   "+utils.size_format(int(hw["wjdx"])) if \
+                             hw["wjmc"] is not None else "未交"))
 
                 hw_dir = os.path.join(self.path, lesson_name, "homework",
                     re.sub(r"[\:\*\?\<\>\|\\/]+", "_", hw_title))
@@ -172,10 +174,12 @@ class Learn():
 
                 for i, result in enumerate(self.soup.parse_annex(content)):
                     if i == 2 and not download_submission:
-                        return
+                        break
                     annex_name, download_url, annex_id = result
-                    annex_prefix = "answer_" if i == 1 else "reviewed_" if i == 3 else ""
-                    if (annex_name != "NONE" and not self.file_id_exist(annex_id)):
+                    annex_prefix = "answer_" if i == 1 else \
+                        "reviewed_" if i == 3 else ""
+                    if (annex_name != "NONE" and \
+                        not self.file_id_exist(annex_id)):
                         annex = self.session.get(download_url, stream=True)
                         self.fm.downloadto(
                             os.path.join(hw_dir, annex_prefix+annex_name),
@@ -192,7 +196,9 @@ class Learn():
     def get_ddl(self, lessons):
         ddls = []
         for lesson in lessons:
-            ddls += self.download_homework(lesson[0], lesson[4])
+            ddls += self.download_homework(lesson[0], lesson[4], False)
+        # delete expired homework by comparing ddl[2] with current time
+        ddls = [ddl for ddl in ddls if not utils.expired(ddl[2])]
         ddls.sort(key=lambda x: x[2])
         return [[ddl[0], ddl[1], ddl[2], utils.time_delta(ddl[2]), ddl[3]]
                 for ddl in ddls]
