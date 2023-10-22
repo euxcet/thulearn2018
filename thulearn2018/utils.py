@@ -32,3 +32,7 @@ def time_delta(t):
     delta = datetime.datetime(
         tl[0], tl[1], tl[2], tl[3], tl[4], 0, 0)-datetime.datetime.now()
     return seconds_to_string(delta.days*24*60*60+delta.seconds)
+
+
+def expired(timeStr):
+    return timeStr < datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
