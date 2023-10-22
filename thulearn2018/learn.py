@@ -8,22 +8,24 @@ learn = browser.Learn()
 
 
 @click.command(help='Download all course files')
-@click.option('-i', default='', help='Ignored courses')
-@click.option('--semester', default='', help='Semester id, e.g. 2023-2024-1')
-@click.option('--path', default='', help='Path to save files')
-def download(i, semester, path):
-    learn.init()
-    if (semester != ''):
-        learn.semester = semester
+@click.option('-i', '--ignore', default='', help='Ignored courses')
+@click.option('-s', '--semester', default='',
+              help='Semester id, e.g. 2023-2024-1')
+@click.option('-o', '--path', default='', help='Path to save files')
+@click.option('--download-submission', is_flag=True, default=False,
+              help='Download submissions, used when not locally stored')
+def download(ignore, semester, path, download_submission):
+    learn.login()
+    learn.set_semester(semester)
     if (path != ''):
         learn.path = path
-    lessons = learn.init_lessons(i)
+    lessons = learn.init_lessons(ignore)
     for lesson in lessons:
         click.echo("Check " + lesson[4])
         groups = learn.get_files_id(lesson[0])
         for group in groups:
             learn.download_files(lesson[0], lesson[4], group)
-        learn.download_homework(lesson[0], lesson[4])
+        learn.download_homework(lesson[0], lesson[4], download_submission)
 
 
 @click.command(help='Reset configurations.')
@@ -41,8 +43,10 @@ def config():
 
 
 @click.command(help='Clear records of all downloaded files.')
-@click.argument('semester', default='')
-def clear():
+@click.option('-s', '--semester', default='', help='Semester id to clear')
+def clear(semester):
+    learn.login()
+    learn.set_semester(semester)
     learn.set_local()
 
 
@@ -50,33 +54,33 @@ def clear():
 @click.argument('name', default='')
 @click.option('-m', default='', help='The message to submit')
 def submit(name, m):
-    learn.init()
-    id_path = '.' + os.sep + ".xszyid"
+    learn.login()
+    learn.set_semester()
+    id_path = ".xszyid"
     if (not os.path.exists(id_path)):
         print("Homwork Id Not Found!")
         return
-    if (name != '' and not os.path.exists('.' + os.sep + name)):
+    if (name != '' and not os.path.exists(name)):
         print("Upload File Not Found!")
         return
     with open(id_path, 'r') as f:
         xszyid = f.read().strip()
     f.close()
-    learn.upload(xszyid, '.' + os.sep + name, m)
+    learn.upload(xszyid, name, m)
 
 
 @click.command(help='Show homework deadlines.')
-@click.option('-i', default='', help='Ignored courses')
-@click.option('--semester', default='', help='Semester id, e.g. 2023-2024-1')
-def ddl(i, semester, path):
+@click.option('-i', '--ignore', default='', help='Ignored courses')
+@click.option('-s', '--semester', default='', help='Semester to show ddl')
+def ddl(ignore, semester):
     def align(string, length=0):
         len_en = len(string)
         len_utf8 = len(string.encode('utf-8'))
         lent = len_en + (len_utf8 - len_en) // 2
         return string + ' ' * (length - lent)
-    learn.init()
-    if (semester != ''):
-        learn.semester = semester
-    ddls = learn.get_ddl(learn.init_lessons(i))
+    learn.login()
+    learn.set_semester(semester)
+    ddls = learn.get_ddl(learn.init_lessons(ignore))
     print('Total %d ddl(s)' % (len(ddls)))
     for ddl in ddls:
         print(align(ddl[0][0:8], 25), align(
