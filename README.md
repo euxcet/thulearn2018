@@ -83,7 +83,7 @@ There are 4 possible annexes for an assignment, including 1. the requirement, 2.
 - clear all the record of your course files and assignments for a semester, default to the current one.
 
   ```bash
-  learn clear 
+  learn clear [--semester <semester>]
   ```
 
   This command will **not** delete the existing files. It means the next time you try to download course files, all the files will be redownloaded, no matter whether you have downloaded them. 
