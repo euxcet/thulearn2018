@@ -166,7 +166,8 @@ class Learn():
                 hw_title, hw_readme = self.soup.parse_homework(content, hw)
                 ddls.append((lesson_name, hw_title, hw["jzsjStr"], hw["wjmc"]+\
                              "   "+utils.size_format(int(hw["wjdx"])) if \
-                             hw["wjmc"] is not None else "未交"))
+                             hw["wjmc"] is not None else hw["zynrStr"] if \
+                             hw["zynrStr"] != "" else hw["zt"] ))
 
                 hw_dir = os.path.join(self.path, lesson_name, "homework",
                     re.sub(r"[\:\*\?\<\>\|\\/]+", "_", hw_title))

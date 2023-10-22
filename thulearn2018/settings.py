@@ -78,7 +78,7 @@ def homework_url(lesson_id, hw):
 
 
 def upload_form(homework_id, file_path, message):
-    if (file_path == '.' + os.sep):
+    if (file_path == ''):
         return MultipartEncoder(
             fields={
                 'xszyid': homework_id,
