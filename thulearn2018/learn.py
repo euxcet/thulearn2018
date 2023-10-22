@@ -8,18 +8,20 @@ learn = browser.Learn()
 
 
 @click.command(help='Download all course files')
-@click.option('-i', '--ignore', default='', help='Ignored courses')
+@click.option('-e', '--exclude', default='', help='excluded courses(override)')
+@click.option('-i', '--include', default='', help='included courses')
 @click.option('-s', '--semester', default='',
               help='Semester id, e.g. 2023-2024-1')
 @click.option('-o', '--path', default='', help='Path to save files')
 @click.option('--download-submission', is_flag=True, default=False,
               help='Download submissions, used when not locally stored')
-def download(ignore, semester, path, download_submission):
+def download(exclude, include, semester, path, download_submission):
     learn.login()
     learn.set_semester(semester)
     if (path != ''):
         learn.path = path
-    lessons = learn.init_lessons(ignore)
+    lessons = learn.init_lessons(exclude=exclude.split(',') if exclude else [],
+                                 include=include.split(',') if include else [])
     for lesson in lessons:
         click.echo("Check " + lesson[4])
         groups = learn.get_files_id(lesson[0])
@@ -70,9 +72,10 @@ def submit(name, m):
 
 
 @click.command(help='Show homework deadlines.')
-@click.option('-i', '--ignore', default='', help='Ignored courses')
+@click.option('-e', '--exclude', default='', help='excluded courses(override)')
+@click.option('-i', '--include', default='', help='included courses')
 @click.option('-s', '--semester', default='', help='Semester to show ddl')
-def ddl(ignore, semester):
+def ddl(exclude, include, semester):
     def align(string, length=0):
         len_en = len(string)
         len_utf8 = len(string.encode('utf-8'))
@@ -80,7 +83,9 @@ def ddl(ignore, semester):
         return string + ' ' * (length - lent)
     learn.login()
     learn.set_semester(semester)
-    ddls = learn.get_ddl(learn.init_lessons(ignore))
+    ddls = learn.get_ddl(learn.init_lessons(
+        exclude=exclude.split(',') if exclude else [],
+        include=include.split(',') if include else []))
     print('Total %d ddl(s)' % (len(ddls)))
     for ddl in ddls:
         print(align(ddl[0][0:8], 25), align(

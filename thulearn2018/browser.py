@@ -79,12 +79,13 @@ class Learn():
         self.local = self.fm.get_local()
 
     # -------------------------------------------------------------------------
-    def get_lessons(self, ignore=[]):
+    def get_lessons(self, exclude=[], include=[]):
         content = self.jh.loads(self.post(settings.lessons_url(self.semester)))
-        
         # first sort by lesson name, then sort by teacher name
         lessons = [[x["wlkcid"], x["kcm"], x["jsm"], x["kch"]]
-                   for x in content["resultList"] if x["kcm"] not in ignore]
+                   for x in content["resultList"] if x["kcm"] not in exclude]
+        if include != []:
+            lessons = [lesson for lesson in lessons if lesson[1] in include]
         
         lessons.sort(key=lambda x: (x[1], x[2]))
         
@@ -111,8 +112,8 @@ class Learn():
 
         return lessons
 
-    def init_lessons(self, ignore_list):
-        lessons = self.get_lessons(ignore_list)
+    def init_lessons(self, exclude, include):
+        lessons = self.get_lessons(exclude=exclude, include=include)
         
         for i in range(len(lessons)):
             self.fm.mkdirl(os.path.join(self.path, lessons[i][4]))

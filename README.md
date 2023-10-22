@@ -48,7 +48,8 @@ Now you could
 - download all the new files and assignments along with the attachments by
 
   ```bash
-  learn download [-i | --ignore "<course_name1>[, <course_name2>, ...]"]
+  learn download [-e | --exclude "<course_name1>[,<course_name2>, ...]"]
+                 [-i | --include "<course_name1>[,<course_name2>, ...]"]
                  [-s | --semester <semester>]
                  [-o | --path <path>]
                  [--download-submission]
@@ -56,7 +57,8 @@ Now you could
   
 	This command will also create subdirectories for all the courses automatically.
   
-  - `[-i | --ignore ]`: Courses to be ignored, separated by `, `, default to none.
+  - `[-e | --exclude ]`: Courses to be excluded, separated by `,`, default to none. (Do not add space between `,` and the course name, as course names may contain space)
+  - `[-i | --include ]`: Courses to be included, separated by `,`, default to all.
   - `[-s | --semester ]`: The semester to download, default to the current one.
   - `[-o | --path ]`: The path to save the files, default to the one in the config.
   - `[--download-submission]`: Whether to download the submissions of assignments, default to `False`, as it will cover the original work. (**Most likely a newer one!**). Designed to download from past semesters, when you don't have a copy of your assignments locally.
@@ -66,7 +68,8 @@ There are 4 possible annexes for an assignment, including 1. the requirement, 2.
 - list the deadlines sorted by time
 
   ```bash
-  learn ddl [-i | --ignore "<course_name1>[, <course_name2>, ...]"]
+  learn ddl [-e | --exclude "<course_name1>[,<course_name2>, ...]"]
+            [-i | --include "<course_name1>[,<course_name2>, ...]"]
             [-s | --semester <semester>]
   ```
   
