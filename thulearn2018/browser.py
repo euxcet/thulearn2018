@@ -16,15 +16,9 @@ class Learn():
         self.fm = filemanager.FileManager()
         self.username, self.password = self.fm.get_user()
         self.path = self.fm.get_path()
-        self.local = self.fm.get_local()
 
         self.soup = soup.Soup()
         self.jh = jsonhelper.JsonHelper()
-
-    def init(self):
-        # login and get current sememster
-        self.login()
-        self.set_semester()
 
     def set_user(self):
         self.fm.set_user()
@@ -82,6 +76,7 @@ class Learn():
             os.unlink(settings.local_file_path)
         os.symlink(os.path.join(settings.temp_path, self.semester+".txt"),
                    settings.local_file_path)
+        self.local = self.fm.get_local()
 
     # -------------------------------------------------------------------------------------------
     def get_lessons(self, ignore=[]):
@@ -120,7 +115,7 @@ class Learn():
         lessons = self.get_lessons(ignore_list)
         
         for i in range(len(lessons)):
-            self.fm.mkdirl(self.path + os.sep + lessons[i][4])
+            self.fm.mkdirl(os.path.join(self.path, lessons[i][4]))
         return lessons
 
     def get_files_id(self, lesson_id):
@@ -158,12 +153,12 @@ class Learn():
                     exit(0)
                 # fix special character that exists in filename
                 real_filename = re.sub(r'[\:\*\?\<\>\|\\/]', '_', f[1])
-                fpath = self.path + os.sep + lesson_name + os.sep + "file" + \
-                    os.sep + real_filename + extension
+                fpath = os.path.join(self.path, lesson_name, "file",
+                                     real_filename + extension)
                 self.fm.downloadto(fpath, fs, real_filename + extension, fid)
                 self.save_file_id(fid)
 
-    def download_homework(self, lesson_id, lesson_name):
+    def download_homework(self, lesson_id, lesson_name, download_submission):
         ddls = []
         for api in settings.homeworks_url(lesson_id):
             for hw in self.jh.loads(self.get(api))["object"]["aaData"]:
@@ -171,18 +166,21 @@ class Learn():
                 hw_title, hw_readme = self.soup.parse_homework(content, hw)
                 ddls.append((lesson_name, hw_title, hw["jzsjStr"], hw["zt"]))
 
-                hw_dir = self.path + os.sep + lesson_name + os.sep + \
-                    "homework" + os.sep + \
-                    re.sub(r"[\:\*\?\<\>\|\\/]+", "_", hw_title)
+                hw_dir = os.path.join(self.path, lesson_name, "homework",
+                    re.sub(r"[\:\*\?\<\>\|\\/]+", "_", hw_title))
                 self.fm.init_homework(hw, hw_dir, hw_title, hw_readme)
 
-                annex_name, download_url, annex_id = \
-                    self.soup.parse_annex(content)
-                if (annex_name != "NONE" and not self.file_id_exist(annex_id)):
-                    annex = self.session.get(download_url, stream=True)
-                    self.fm.downloadto(hw_dir + os.sep + annex_name,
-                                       annex, annex_name, annex_id)
-                    self.save_file_id(annex_id)
+                for i, result in enumerate(self.soup.parse_annex(content)):
+                    if i == 2 and not download_submission:
+                        return
+                    annex_name, download_url, annex_id = result
+                    annex_prefix = "answer_" if i == 1 else "reviewed_" if i == 3 else ""
+                    if (annex_name != "NONE" and not self.file_id_exist(annex_id)):
+                        annex = self.session.get(download_url, stream=True)
+                        self.fm.downloadto(
+                            os.path.join(hw_dir, annex_prefix+annex_name),
+                            annex, annex_name, annex_id)
+                        self.save_file_id(annex_id)
         return ddls
 
     def upload(self, homework_id, file_path, message):

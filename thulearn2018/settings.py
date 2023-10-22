@@ -66,10 +66,10 @@ def download_url(fid):
     return url+"b/wlxt/kj/wlkc_kjxxb/student/downloadFile?sfgk=0&wjid="+fid
 
 
-def homeworks_url(lesson_id):
+def homeworks_url(lesson_id): # add "Ypg" if needed
     form = "aoData=[{\"name\":\"wlkcid\",\"value\":\""+lesson_id+"\"}]"
-    return [url+"b/wlxt/kczy/zy/student/zyListYjwg?"+form,
-            url+"b/wlxt/kczy/zy/student/zyListWj?"+form]
+    types = ["Yjwg", "Wj", "Ypg"]
+    return [url+"b/wlxt/kczy/zy/student/zyList"+x+"?"+form for x in types]
 
 
 def homework_url(lesson_id, hw):

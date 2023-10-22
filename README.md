@@ -3,7 +3,7 @@
 Tools for Web Learning of Tsinghua University.
 
 ## Get Started
-```
+```bash
 pip install thulearn2018
 ```
 
@@ -21,7 +21,9 @@ After installing the package, you will get the command `learn` . Check this by r
 learn --help
 ```
 
-This will show all the subcommands you can use basically, including downloading all the new files, listing the deadlines and submitting your homework.
+This will show all the subcommands you can use basically, including downloading all the new files, listing the deadlines and submitting your work.
+
+### Login Authentication
 
 For login authentication, please run 
 
@@ -29,45 +31,62 @@ For login authentication, please run
 learn reset
 ```
 
-to set or reset your personal configuration, such as the username/password for web learning and the absolute path where you want to save your course directories. **Notice: The username/password is saved to a local file in your temp directory, depending on your OS and won't be uploaded to anywhere online except the web learning.** You could reset the configuration by rerunning the command. Anytime you want to check the config, just run 
+to set or reset your personal configuration, including the username/password for web learning and the absolute path where you want to save your courses in the **current semester**. If you'd like to download from past semesters, always remember to customize the target directory unless the default one is preferred. ==Notice: The username/password is saved to a local file in your temp directory, depending on your OS and won't be uploaded to anywhere online except the web learning.== You could reset the configuration by rerunning the command. Anytime you want to check the config, just run 
 
-```
+```bash
 learn config
 ```
 
+### Functional Commands
+
 Now you could 
 
-- download all the new files and homeworks along with the attachments by
+- download all the new files and assignments along with the attachments by
 
-  ```
-  learn download
+  ```bash
+  learn download [-i | --ignore "<course_name1>[, <course_name2>, ...]"]
+                 [-s | --semester <semester>]
+                 [-o | --path <path>]
+                 [--download-submission]
   ```
   
-	This command will also create subdirectories for all the courses automatically. 
+	This command will also create subdirectories for all the courses automatically.
+  
+  - `[-i | --ignore ]`: Courses to be ignored, separated by `, `, default to none.
+  - `[-s | --semester ]`: The semester to download, default to the current one.
+  - `[-o | --path ]`: The path to save the files, default to the one in the config.
+  - `[--download-submission]`: Whether to download the submissions of assignments, default to `False`, as it will cover the original work. (**Most likely a newer one!**). Designed to download from past semesters, when you don't have a copy of your assignments locally.
+
+There are 4 possible annexes for an assignment, including 1. the requirement, 2. the answer, 3. your submission and 4. reviewed submission. As we cannot control how the teacher names the files, prefixes `answer_` and `reviewed_` will be added to relevant files to avoid clashes.
 
 - list the deadlines sorted by time
 
+  ```bash
+  learn ddl [-i | --ignore "<course_name1>[, <course_name2>, ...]"]
+            [-s | --semester <semester>]
   ```
-  learn ddl
+  
+
+- submit your assignment and the text message with 
+
+  ```bash
+  learn submit /path/to/your/assignment [-m "<message>"]
   ```
 
-- submit your homework and the text message with 
-
-  ```
-  learn submit /path/to/your/homework/file -m "the text message you want to submit."
-  ```
-
-  **Notice: This command must be excuted at the homework directory where a file named `.xszyid` exists.**
+  **Notice: This command must be excuted at the assignment directory where a file named `.xszyid` exists.**
   If you do not want to upload any text/file, just omit the `-m` option/the parameter following `submit`. 
 
-- clear all the record of your course files and homeworks
+- clear all the record of your course files and assignments for a semester, default to the current one.
 
-  ```
-  learn clear
+  ```bash
+  learn clear 
   ```
 
   This command will **not** delete the existing files. It means the next time you try to download course files, all the files will be redownloaded, no matter whether you have downloaded them. 
 
+### Interrupted Download
+
+You can interrupt the download process of any certain file to skip it by pressing `Ctrl + C`. This skip will be recorded and the next time you try to download the files, the skipped files will not be downloaded again. Used to skip large files like recordings and should be used with caution.
 
 ## Feel free to contribute yourself
 
@@ -78,4 +97,3 @@ Now you could
 :heavy_check_mark: ​Come up with any new idea or feature
 
 :heavy_check_mark: Create your pull request to this repository
-
