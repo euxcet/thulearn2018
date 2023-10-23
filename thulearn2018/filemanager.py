@@ -21,7 +21,7 @@ class FileManager():
         self.mkdir(os.path.join(name, "homework"))
 
     def set_user(self):
-        print("Enter your username: ")
+        print("Enter your username (Student ID): ")
         username = input()
         print("Enter your password: ")
         password = getpass.getpass()
