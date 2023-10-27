@@ -191,9 +191,12 @@ class Learn():
 
     def upload(self, homework_id, file_path, message):
         form = settings.upload_form(homework_id, file_path, message)
-        self.post(settings.upload_api, form=form,
-                  headers=settings.upload_headers)
-        print("done")
+        response = self.post(settings.upload_api, form=form,
+                             headers=settings.upload_headers)
+        if response.status_code == 200:
+            print("done")
+        else:
+            print(f"error:\n{response.json()}")
 
     def get_ddl(self, lessons):
         ddls = []
