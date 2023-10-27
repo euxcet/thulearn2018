@@ -2,6 +2,7 @@ import os
 import re
 
 import requests
+import shutil
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from . import filemanager, jsonhelper, settings, soup, utils
@@ -74,8 +75,12 @@ class Learn():
         # create or redirect local.txt to current semester
         if os.path.exists(settings.local_file_path):
             os.unlink(settings.local_file_path)
-        os.symlink(os.path.join(settings.temp_path, self.semester+".txt"),
-                   settings.local_file_path)
+        if os.name == 'nt':
+            os.link(os.path.join(settings.temp_path, self.semester+".txt"),
+                    settings.local_file_path)
+        else:
+            os.symlink(os.path.join(settings.temp_path, self.semester+".txt"),
+                       settings.local_file_path)
         self.local = self.fm.get_local()
 
     # -------------------------------------------------------------------------
