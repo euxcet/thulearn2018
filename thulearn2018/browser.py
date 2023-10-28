@@ -196,12 +196,12 @@ class Learn():
 
     def upload(self, homework_id, file_path, message):
         form = settings.upload_form(homework_id, file_path, message)
-        response = self.post(settings.upload_api, form=form,
-                             headers=settings.upload_headers)
-        if response.status_code == 200:
+        response = self.jh.loads(self.post(settings.upload_api, form=form,
+                                 headers=settings.upload_headers))
+        if response["result"] == "success":
             print("done")
         else:
-            print(f"error:\n{response.json()}")
+            print(f"Error: assignment may have expired. Details:\n{response}")
 
     def get_ddl(self, lessons):
         ddls = []
