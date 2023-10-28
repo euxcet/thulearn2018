@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="thulearn2018",
-    version="2.3.1",
+    version="2.3.2",
     author="Chengchi Zhou, Yingtian Liu, Yurui Hong",
     author_email="zcc16@mails.tsinghua.edu.cn, liu-yt16@mails.tsinghua.edu.cn, yuruihong02@outlook.com",
     description="Tools for Web Learning of Tsinghua University",
