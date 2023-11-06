@@ -136,6 +136,7 @@ class FileManager():
                             sys.stdout.write("\r\t%s/UNKNOWN    \t" %
                                             (utils.size_format(temp_size)))
                             sys.stdout.flush()
+            sys.stdout.write("\n")
         except KeyboardInterrupt:
             print("\n  Interrupted")
             if os.path.exists(save_path):
