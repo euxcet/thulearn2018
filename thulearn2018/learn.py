@@ -45,7 +45,8 @@ def config():
 
 
 @click.command(help='Clear records of all downloaded files.')
-@click.option('-s', '--semester', default='', help='Semester id to clear')
+@click.option('-s', '--semester', default='',
+              help='Semester id to clear, e.g. 2023-2024-1')
 def clear(semester):
     learn.login()
     learn.set_semester(semester)
@@ -74,8 +75,10 @@ def submit(name, m):
 @click.command(help='Show homework deadlines.')
 @click.option('-e', '--exclude', default='', help='excluded courses(override)')
 @click.option('-i', '--include', default='', help='included courses')
-@click.option('-s', '--semester', default='', help='Semester to show ddl')
-def ddl(exclude, include, semester):
+@click.option('-s', '--semester', default='',
+              help='Semester to show ddl, e.g. 2023-2024-1')
+@click.option('-o', '--path', default='', help='Path to save homework files')
+def ddl(exclude, include, semester, path):
     def align(string, length=0):
         len_en = len(string)
         len_utf8 = len(string.encode('utf-8'))
@@ -83,6 +86,8 @@ def ddl(exclude, include, semester):
         return string + ' ' * (length - lent)
     learn.login()
     learn.set_semester(semester)
+    if (path != ''):
+        learn.path = path
     ddls = learn.get_ddl(learn.init_lessons(
         exclude=exclude.split(',') if exclude else [],
         include=include.split(',') if include else []))
