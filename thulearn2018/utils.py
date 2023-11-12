@@ -29,8 +29,8 @@ def seconds_to_string(seconds):
 def time_delta(t):
     sp = t.split(' ')
     tl = [int(x) for x in sp[0].split('-') + sp[1].split(':')]
-    delta = datetime.datetime(
-        tl[0], tl[1], tl[2], tl[3], tl[4], 0, 0)-datetime.datetime.now()
+    delta = datetime.datetime(tl[0], tl[1], tl[2], tl[3], tl[4], 0, 0) - \
+        (datetime.datetime.utcnow() + datetime.timedelta(hours=8))
     return seconds_to_string(delta.days*24*60*60+delta.seconds)
 
 
