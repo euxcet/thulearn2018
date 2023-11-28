@@ -50,7 +50,7 @@ class Soup():
             'div', class_='list fujian clearfix')]
         results = []
         for annex_url in annex_urls:
-            result = ["NONE", "NONE", "NONE"] # name, download url, id
+            result = ["NONE", "NONE", "NONE"]  # name, download url, id
             if len(annex_url) > 0:
                 result[0] = annex_url[0].get_text().strip()
                 result[1] = settings.url+annex_url[1].get('href')

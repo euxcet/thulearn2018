@@ -30,11 +30,11 @@ path_file_path = os.path.join(config_dir, "path.txt")
 
 url = "https://learn.tsinghua.edu.cn/"
 login_id_url = "https://id.tsinghua.edu.cn/do/off/ui/auth/login/post/" + \
-"bb5df85216504820be7bba2b0ae1535b/0?/login.do"
+    "bb5df85216504820be7bba2b0ae1535b/0?/login.do"
 login_url = url + "b/j_spring_security_thauth_roaming_entry"
 semester_url = url + "b/kc/zhjw_v_code_xnxq/getCurrentAndNextSemester"
 files_url = url + "b/wlxt/kj/wlkc_kjflb/student/pageList"
-upload_api = url + 'b/wlxt/kczy/zy/student/tjzy'
+upload_api = url + "b/wlxt/kczy/zy/student/tjzy"
 
 
 def file_url(lesson_id, file_id):
@@ -43,7 +43,7 @@ def file_url(lesson_id, file_id):
 
 def lessons_url(semester):
     return url+"b/wlxt/kc/v_wlkc_xs_xkb_kcb_extend/student/" + \
-    "loadCourseBySemesterId/"+semester+"/en"
+        "loadCourseBySemesterId/"+semester+"/en"
 
 
 def download_before_url(fid):
@@ -54,7 +54,7 @@ def download_url(fid):
     return url+"b/wlxt/kj/wlkc_kjxxb/student/downloadFile?sfgk=0&wjid="+fid
 
 
-def homeworks_url(lesson_id): # add "Ypg" if needed
+def homeworks_url(lesson_id):  # add "Ypg" if needed
     form = "aoData=[{\"name\":\"wlkcid\",\"value\":\""+lesson_id+"\"}]"
     types = ["Yjwg", "Wj", "Ypg"]
     return [url+"b/wlxt/kczy/zy/student/zyList"+x+"?"+form for x in types]

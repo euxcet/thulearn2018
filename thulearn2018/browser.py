@@ -29,7 +29,7 @@ class Learn():
 
     def set_local(self):
         self.fm.set_local()
-    
+
     def get_path(self):
         return self.fm.get_path()
 
@@ -91,35 +91,35 @@ class Learn():
                    for x in content["resultList"] if x["kcm"] not in exclude]
         if include != []:
             lessons = [lesson for lesson in lessons if lesson[1] in include]
-        
+
         lessons.sort(key=lambda x: (x[1], x[2]))
-        
+
         # create a helper function to determine the folder name
         for i in range(len(lessons)):
             _, kcm, jsm, kch = lessons[i]
-            
+
             # check the previous and next lesson to
             # determine the naming method of the current lesson
             prev_lesson = lessons[i-1] if i-1 >= 0 else None
             next_lesson = lessons[i+1] if i+1 < len(lessons) else None
-            
+
             if (prev_lesson is None or prev_lesson[1] != kcm) and \
                (next_lesson is None or next_lesson[1] != kcm):
                 lessons[i].append(kcm)
-            
+
             if (prev_lesson is None or prev_lesson[1] != kcm or
                prev_lesson[2] != jsm) and \
                (next_lesson is None or next_lesson[1] != kcm or
                next_lesson[2] != jsm):
                 lessons[i].append(f"{kcm}_{jsm}")
-            
+
             lessons[i].append(f"{kcm}_{kch}")
 
         return lessons
 
     def init_lessons(self, exclude, include):
         lessons = self.get_lessons(exclude=exclude, include=include)
-        
+
         for i in range(len(lessons)):
             self.fm.mkdirl(os.path.join(self.path, lessons[i][4]))
         return lessons
@@ -170,13 +170,14 @@ class Learn():
             for hw in self.jh.loads(self.get(api))["object"]["aaData"]:
                 content = self.get(settings.homework_url(lesson_id, hw))
                 hw_title, hw_readme = self.soup.parse_homework(content, hw)
-                ddls.append((lesson_name, hw_title, hw["jzsjStr"], hw["wjmc"]+\
-                             "   "+utils.size_format(int(hw["wjdx"])) if \
-                             hw["wjmc"] is not None else hw["zynrStr"] if \
-                             hw["zynrStr"] != "" else hw["zt"] ))
+                ddls.append((lesson_name, hw_title, hw["jzsjStr"], hw["wjmc"] +
+                             "   "+utils.size_format(int(hw["wjdx"])) if
+                             hw["wjmc"] is not None else hw["zynrStr"] if
+                             hw["zynrStr"] != "" else hw["zt"]))
 
                 hw_dir = os.path.join(self.path, lesson_name, "homework",
-                    re.sub(r"[\:\*\?\<\>\|\\/]+", "_", hw_title))
+                                      re.sub(r"[\:\*\?\<\>\|\\/]+", "_",
+                                             hw_title))
                 self.fm.init_homework(hw, hw_dir, hw_title, hw_readme)
 
                 for i, result in enumerate(self.soup.parse_annex(content)):
@@ -185,8 +186,8 @@ class Learn():
                     annex_name, download_url, annex_id = result
                     annex_prefix = "answer_" if i == 1 else \
                         "reviewed_" if i == 3 else ""
-                    if (annex_name != "NONE" and \
-                        not self.file_id_exist(annex_id)):
+                    if (annex_name != "NONE" and
+                            not self.file_id_exist(annex_id)):
                         annex = self.session.get(download_url, stream=True)
                         self.fm.downloadto(
                             os.path.join(hw_dir, annex_prefix+annex_name),
