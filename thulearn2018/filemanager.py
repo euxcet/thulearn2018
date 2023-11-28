@@ -127,14 +127,14 @@ class FileManager():
                             if (platform.system() == "Windows"):
                                 space = "  "
                             sys.stdout.write("\r[%s%s] %d%% %s/%s    \t" %
-                                            ('█'*done, space*(30-done),
-                                            100*temp_size / total_size,
-                                            utils.size_format(temp_size),
-                                            utils.size_format(total_size)))
+                                             ('█'*done, space*(30-done),
+                                              100*temp_size / total_size,
+                                              utils.size_format(temp_size),
+                                              utils.size_format(total_size)))
                             sys.stdout.flush()
                         else:
                             sys.stdout.write("\r\t%s/UNKNOWN    \t" %
-                                            (utils.size_format(temp_size)))
+                                             (utils.size_format(temp_size)))
                             sys.stdout.flush()
             sys.stdout.write("\n")
         except KeyboardInterrupt:
