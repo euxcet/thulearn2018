@@ -2,6 +2,30 @@
 
 Tools for Web Learning of Tsinghua University.
 
+<details>
+<summary>2023.11.28 Fix UNSAFE_LEGACY_RENEGOTIATION_DISABLED error</summary>
+
+It has been confirmed on some Linux distros that the depreciation of legacy unsafe renegotiation in OpenSSL causes UNSAFE_LEGACY_RENEGOTIATION_DISABLED error. By refering to https://stackoverflow.com/questions/71603314/ssl-error-unsafe-legacy-renegotiation-disabled, the project has provided a custom `openssl.conf` to help address the connectivity issue.
+
+Just set the `OPENSSL_CONFIG` variable when executing `learn` commands:
+
+```bash
+OPENSSL_CONF="$HOME/.config/thulearn2018/openssl.conf" learn ...
+```
+
+or if you have a custom `XDG_CONFIG_HOME`:
+
+```bash
+OPENSSL_CONF="$XDG_CONFIG_HOME/thulearn2018/openssl.conf" learn ...
+```
+
+You can also alias `learn` to `OPENSSL_CONF="$HOME/.config/thulearn2018/openssl.conf" learn` to achieve drop-in solution.
+
+**Warning**: When enabling Legacy Unsafe Renegotiation, SSL connections will be vulnerable to the Man-in-the-Middle prefix attack as described in [CVE-2009-3555](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CAN-2009-3555). Use this at your own risk and it is not recommened to `export` the variable shell-wide.
+
+</details>
+
+
 ## Get Started
 ```bash
 pip install thulearn2018
