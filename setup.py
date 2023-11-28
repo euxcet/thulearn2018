@@ -1,4 +1,27 @@
 import setuptools
+import os
+from pathlib import Path
+from setuptools.command.install import install
+
+class CustomInstall(install):
+    def run(self):
+        install.run(self)
+        if (os.name == 'nt'):
+            config_dir = os.path.join(os.environ.get("APPDATA"), "thulearn2018")
+        elif (os.name == 'posix'):
+            config_dir = os.path.join(os.environ.get(
+                "XDG_CONFIG_HOME", os.path.expanduser("~/.config")), "thulearn2018")
+        else :
+            config_dir = Path.home()
+        if (not os.path.exists(config_dir)):
+            os.makedirs(config_dir)
+            for file_name in ["user.txt", "local.txt", "path.txt"]:
+                old_file_path = os.path.join(Path.home(), ".thulearn2018-"+file_name)
+                if (os.path.exists(old_file_path)):
+                    os.rename(old_file_path, os.path.join(config_dir, file_name))
+        with open(os.path.join(config_dir, "openssl.conf"), 'w') as f:
+            f.write("openssl_conf = openssl_init\n\n[openssl_init]\nssl_conf = ssl_sect\n\n[ssl_sect]\nsystem_default = system_default_sect\n\n[system_default_sect]\nOptions = UnsafeLegacyRenegotiation\n")
+
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -24,4 +47,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    cmdclass={
+        'install': CustomInstall,
+    }
 )

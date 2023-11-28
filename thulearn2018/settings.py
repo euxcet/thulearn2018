@@ -16,31 +16,19 @@ upload_headers = {
     'Content-Type': 'multipart/form-data; '
                     'boundary=----WebKitFormBoundaryTytyPd5kgvE3t0kW'}
 
-url = "https://learn.tsinghua.edu.cn/"
-
-user_file_name = 'user.txt'
-local_file_name = 'local.txt'
-path_file_name = 'path.txt'
-
 if (os.name == 'nt'):
-    temp_path = os.path.join(os.environ.get("APPDATA"), "thulearn2018")
+    config_dir = os.path.join(os.environ.get("APPDATA"), "thulearn2018")
 elif (os.name == 'posix'):
-    temp_path = os.path.join(os.environ.get(
+    config_dir = os.path.join(os.environ.get(
         "XDG_CONFIG_HOME", os.path.expanduser("~/.config")), "thulearn2018")
 else:
-    temp_path = Path.home()
+    config_dir = Path.home()
 
-if (not os.path.exists(temp_path)):
-    os.makedirs(temp_path)
-    for file_name in [user_file_name, local_file_name, path_file_name]:
-        old_file_path = os.path.join(Path.home(), ".thulearn2018-"+file_name)
-        if (os.path.exists(old_file_path)):
-            os.rename(old_file_path, os.path.join(temp_path, file_name))
+user_file_path = os.path.join(config_dir, "user.txt")
+local_file_path = os.path.join(config_dir, "local.txt")
+path_file_path = os.path.join(config_dir, "path.txt")
 
-user_file_path = os.path.join(temp_path, user_file_name)
-local_file_path = os.path.join(temp_path, local_file_name)
-path_file_path = os.path.join(temp_path, path_file_name)
-
+url = "https://learn.tsinghua.edu.cn/"
 login_id_url = "https://id.tsinghua.edu.cn/do/off/ui/auth/login/post/" + \
 "bb5df85216504820be7bba2b0ae1535b/0?/login.do"
 login_url = url + "b/j_spring_security_thauth_roaming_entry"
