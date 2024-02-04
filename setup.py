@@ -40,7 +40,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="thulearn2018",
-    version="2.3.4",
+    version="2.3.5",
     author="Chengchi Zhou, Yingtian Liu, Yurui Hong",
     author_email="zcc16@mails.tsinghua.edu.cn, liu-yt16@mails.tsinghua.edu.cn,"
                  "yuruihong02@outlook.com",
