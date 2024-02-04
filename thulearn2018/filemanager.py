@@ -21,17 +21,29 @@ class FileManager():
         self.mkdir(os.path.join(name, "homework"))
 
     def set_user(self):
-        print("Enter your username (Student ID): ")
-        username = input()
-        print("Enter your password: ")
-        password = getpass.getpass()
+        username, password = self.get_user(reset=False)
+        if username:
+            print("Current username:", username)
+            print("Input your username (Student ID): ('Enter' to skip change)")
+        else:
+            print("Input your username (Student ID): ")
+        new_username = input()
+        if new_username:
+            username = new_username
+        if password:
+            print("Input your password: ('Enter' to skip change)")
+        else:
+            print("Input your password: ")
+        new_password = getpass.getpass()
+        if new_password:
+            password = new_password
         sf = open(settings.user_file_path, 'w')
         print(username, file=sf)
         print(password, file=sf)
         sf.close()
         return (username, password)
 
-    def get_user(self):
+    def get_user(self, reset=True):
         try:
             f = open(settings.user_file_path, 'r')
             lines = f.readlines()
@@ -39,7 +51,7 @@ class FileManager():
             password = lines[1].replace('\n', '').replace('\r', '')
             f.close()
         except:
-            username, password = self.set_user()
+            username, password = self.set_user() if reset else (None, None)
 
         return (username, password)
 
@@ -60,20 +72,27 @@ class FileManager():
         return local
 
     def set_path(self):
-        print("Enter the directory to save documents for this semester: ")
-        path = input()
+        path = self.get_path(reset=False)
+        if path:
+            print("Current path:", path)
+            print("Input new saving path: ('Enter' to skip change)")
+        else:
+            print("Input saving path for this semester:")
+        input_path = input()
+        if input_path:
+            path = input_path
         sf = open(settings.path_file_path, 'w')
         print(path, file=sf)
         sf.close()
         return path
 
-    def get_path(self):
+    def get_path(self, reset=True):
         try:
             f = open(settings.path_file_path, 'r')
             path = f.readlines()[0].replace('\n', '').replace('\r', '')
             f.close()
         except:
-            path = self.set_path()
+            path = self.set_path() if reset else None
         return path
 
     def append(self, fname, content):
