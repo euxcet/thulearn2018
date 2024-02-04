@@ -134,10 +134,10 @@ class Learn():
     def file_id_exist(self, fid):
         return (fid in self.local)
 
-    def save_file_id(self, fid):
+    def save_file_id(self, fid, fpath):
         if (fid not in self.local):
             self.local.add(fid)
-            self.fm.append(settings.local_file_path, fid)
+            self.fm.append(settings.local_file_path, fid+" "+fpath)
 
     def download_files(self, lesson_id, lesson_name, file_id):
         # file_id example "sjqy_26ef84e7689589e90168990b993830641"
@@ -158,11 +158,11 @@ class Learn():
                     print('not found name')
                     exit(0)
                 # fix special character that exists in filename
-                real_filename = re.sub(r'[\:\*\?\<\>\|\\/]', '_', f[1])
+                real_filename = re.sub(r'[\:\*\?\<\>\|\\/\t]', '_', f[1])
                 fpath = os.path.join(self.path, lesson_name, "file",
                                      real_filename + extension)
                 self.fm.downloadto(fpath, fs, real_filename + extension, fid)
-                self.save_file_id(fid)
+                self.save_file_id(fid, fpath)
 
     def download_homework(self, lesson_id, lesson_name, download_submission):
         ddls = []
@@ -189,10 +189,9 @@ class Learn():
                     if (annex_name != "NONE" and
                             not self.file_id_exist(annex_id)):
                         annex = self.session.get(download_url, stream=True)
-                        self.fm.downloadto(
-                            os.path.join(hw_dir, annex_prefix+annex_name),
-                            annex, annex_name, annex_id)
-                        self.save_file_id(annex_id)
+                        fpath = os.path.join(hw_dir, annex_prefix+annex_name)
+                        self.fm.downloadto(fpath, annex, annex_name, annex_id)
+                        self.save_file_id(annex_id, fpath)
         return ddls
 
     def upload(self, homework_id, file_path, message):

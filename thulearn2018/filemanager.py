@@ -12,7 +12,6 @@ class FileManager():
 
     def mkdir(self, name):
         if not os.path.exists(name):
-            # os.mkdir(name)
             os.makedirs(name)
 
     def mkdirl(self, name):
@@ -65,7 +64,7 @@ class FileManager():
             f = open(settings.local_file_path, 'r')
             lines = f.readlines()
             for line in lines:
-                local.add(line.replace('\n', '').replace('\r', ''))
+                local.add(line.split()[0])
             f.close()
         except:
             self.set_local()
