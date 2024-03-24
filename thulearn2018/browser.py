@@ -169,7 +169,8 @@ class Learn():
         for api in settings.homeworks_url(lesson_id):
             for hw in self.jh.loads(self.get(api))["object"]["aaData"]:
                 content = self.get(settings.homework_url(lesson_id, hw))
-                hw_title, hw_readme = self.soup.parse_homework(content, hw)
+                hw_title, hw_readme = self.soup.parse_homework(
+                    content, hw["jzsjStr"])
                 ddls.append((lesson_name, hw_title, hw["jzsjStr"], hw["wjmc"] +
                              "   "+utils.size_format(int(hw["wjdx"])) if
                              hw["wjmc"] is not None else hw["zynrStr"] if
