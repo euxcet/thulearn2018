@@ -17,14 +17,17 @@ class Soup():
         return ticket
 
     def markdown_add_title(self, line):
-        title = ["作业内容及要求：", "本人提交的作业："]
+        title = ["作业内容及要求：", "本人提交的作业：", "老师批阅结果："]
         subtitle = ["作业标题", "作业说明", "作业附件", "答案说明", "答案附件",
                     "发布对象", "完成方式", "学号", "提交日期", "截止日期",
-                    "上交作业内容", "上交作业附件"]
-        title_en = ["Contents and Requirements:：", "My coursework submitted："]
+                    "上交作业内容", "上交作业附件", "批阅老师", "批阅时间",
+                    "成绩", "评语", "评语附件"]
+        title_en = ["Contents and Requirements:：", "My coursework submitted：",
+                    "Instructors' comments"]
         subtitle_en = ["Title", "Description", "Attach.", "ANS", "Content",
                        "Assign to", "INDV/GRP", "Student No.", "Date",
-                       "Deadline", "Content"]
+                       "Deadline", "Content", "By", "Grading Time", "Grade",
+                       "Comment"]
         if len(line) == 0:
             return ""
         if (line in subtitle or line in subtitle_en):
@@ -35,22 +38,34 @@ class Soup():
             return "### " + line[:-2] + "\n"
         if line == title_en[1]:
             return "### " + line[:-1] + "\n"
+        if line == title_en[2]:
+            return "### " + line + "\n"
         return line + "\n"
 
     def to_markdown(self, txt):
         txts = [self.markdown_add_title(line.strip()) for line in txt]
         return "".join(txts)
 
-    def parse_homework(self, content, ddl):
+    def parse_homework(self, content, hw):
         soup = BeautifulSoup(content, "html.parser")
         boxbox = soup.find_all('div', class_="boxbox")
         hw_title = boxbox[0].find_all(
             'div', class_="right")[0].get_text().strip()
-        ddl_title = "截止日期" if boxbox[0].find_all(
-            'div', class_="ttee")[0].get_text() == "作业内容及要求：" else "Deadline"
+        is_zh = boxbox[0].find_all(
+            'div', class_="ttee")[0].get_text() == "作业内容及要求："
+        (ddl_title, instructor_name_title, grading_time_title, grade_title,
+            grading_content_title, graded_file_title) = ("截止日期", "批阅老师",
+            "批阅时间", "成绩", "评语", "评语附件") if is_zh else (
+            "Deadline", "By", "Grading Time", "Grade", "Comment", "Attach.")
         txt = boxbox[0].get_text().replace('\t', '').split('\n') + \
-            [ddl_title] + [ddl] + \
-            boxbox[1].get_text().replace('\t', '').split('\n')
+            [ddl_title] + [str(hw["jzsjStr"])] + \
+            boxbox[1].get_text().replace('\t', '').split('\n') + \
+            ["老师批阅结果：" if is_zh else "Instructors' comments"] + \
+            [instructor_name_title] + [str(hw["jsm"])] + \
+            [grading_time_title] + [str(hw["pysjStr"])] + \
+            [grade_title] + [str(hw["cj"])] + \
+            [grading_content_title] + [str(hw["pynr"])] + \
+            [graded_file_title] + [str(hw["wjmc"])]
         hw_readme = self.to_markdown(txt)
         return (hw_title, hw_readme)
 
