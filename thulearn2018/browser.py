@@ -211,7 +211,10 @@ class Learn():
                     readme_path = os.path.join(hw_dir, "README.md")
                     with open(readme_path, "r") as f:
                         content = f.readlines()
-                    insert_index = content.index("#### Description\n") + 1
+                    for i, line in enumerate(content):
+                        if line.strip() in ["#### Description", "#### 作业说明"]:
+                            insert_index = i + 1
+                            break
                     for img_name in reversed(img_names):
                         content.insert(insert_index, f"![]({img_name})\n")
                     with open(readme_path, "w") as file:
