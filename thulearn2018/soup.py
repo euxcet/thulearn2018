@@ -71,14 +71,17 @@ class Soup():
 
     def parse_annex(self, content):
         soup = BeautifulSoup(content, "html.parser")
-        annex_urls = [a.find_all('a') for a in soup.find_all(
+        annexes = [a.find_all('a') for a in soup.find_all(
             'div', class_='list fujian clearfix')]
-        results = []
-        for annex_url in annex_urls:
-            result = ["NONE", "NONE", "NONE"]  # name, download url, id
-            if len(annex_url) > 0:
-                result[0] = annex_url[0].get_text().strip()
-                result[1] = settings.url+annex_url[1].get('href')
-                result[2] = annex_url[1].get('href').split('/')[-1]
-            results.append(result)
-        return results
+        calendat_tag = soup.find('div', class_='list calendar clearfix')
+        img_urls = [img['src'] for img in calendat_tag.find_all('img')] \
+            if calendat_tag else []
+        annex_attrs = []
+        for annex in annexes:
+            attr = ["NONE", "NONE", "NONE"]  # name, download url, id
+            if len(annex) > 0:
+                attr[0] = annex[0].get_text().strip()
+                attr[1] = settings.url+annex[1].get('href')
+                attr[2] = annex[1].get('href').split('/')[-1]
+            annex_attrs.append(attr)
+        return annex_attrs, img_urls

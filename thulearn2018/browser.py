@@ -180,10 +180,12 @@ class Learn():
                                              hw_title))
                 self.fm.init_homework(hw, hw_dir, hw_title, hw_readme)
 
-                for i, result in enumerate(self.soup.parse_annex(content)):
+                # download annexes and images
+                annex_attrs, img_urls = self.soup.parse_annex(content)
+                for i, attr in enumerate(annex_attrs):
                     if i == 2 and not download_submission:
                         break
-                    annex_name, download_url, annex_id = result
+                    annex_name, download_url, annex_id = attr
                     annex_prefix = "answer_" if i == 1 else \
                         "reviewed_" if i == 3 else ""
                     if (annex_name != "NONE" and
@@ -192,6 +194,31 @@ class Learn():
                         fpath = os.path.join(hw_dir, annex_prefix+annex_name)
                         self.fm.downloadto(fpath, annex, annex_name, annex_id)
                         self.save_file_id(annex_id, fpath)
+                img_names = []
+                for i, img_url in enumerate(img_urls):
+                    img_id = img_url.split("?")[-1].split("&")[0].split("=")[1]
+                    if not self.file_id_exist(img_id):
+                        img = self.session.get(img_url, stream=True)
+                        img_name = f'''{i+1}_{img.headers.get(
+                            'content-disposition').split(
+                            'filename=')[1].strip('"')}'''
+                        if img.content[:8] == b'\x89PNG\x0d\x0a\x1a\x0a':
+                            img_name = os.path.splitext(img_name)[0] + ".png"
+                        fpath = os.path.join(hw_dir, img_name)
+                        self.fm.downloadto(fpath, img, img_name, img_id)
+                        self.save_file_id(img_id, fpath)
+                        img_names.append(img_name)
+
+                # add images to README.md in initiation
+                if img_names:
+                    readme_path = os.path.join(hw_dir, "README.md")
+                    with open(readme_path, "r") as f:
+                        content = f.readlines()
+                    insert_index = content.index("#### Description\n") + 1
+                    for img_name in reversed(img_names):
+                        content.insert(insert_index, f"![]({img_name})\n")
+                    with open(readme_path, "w") as file:
+                        file.writelines(content)
         return ddls
 
     def upload(self, homework_id, file_path, message):
