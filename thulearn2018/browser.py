@@ -161,7 +161,7 @@ class Learn():
                 real_filename = re.sub(r'[\:\*\?\<\>\|\\/\t]', '_', f[1])
                 fpath = os.path.join(self.path, lesson_name, "file",
                                      real_filename + extension)
-                self.fm.downloadto(fpath, fs, real_filename + extension, fid)
+                self.fm.downloadto(fpath, fs, real_filename + extension)
                 self.save_file_id(fid, fpath)
 
     def download_homework(self, lesson_id, lesson_name, download_submission):
@@ -192,24 +192,21 @@ class Learn():
                             not self.file_id_exist(annex_id)):
                         annex = self.session.get(download_url, stream=True)
                         fpath = os.path.join(hw_dir, annex_prefix+annex_name)
-                        self.fm.downloadto(fpath, annex, annex_name, annex_id)
+                        self.fm.downloadto(fpath, annex, annex_name)
                         self.save_file_id(annex_id, fpath)
                 img_names = []
                 for i, img_url in enumerate(img_urls):
-                    img_id = img_url.split("?")[-1].split("&")[0].split("=")[1]
-                    if not self.file_id_exist(img_id):
-                        img = self.session.get(img_url, stream=True)
-                        img_name = f'''{i+1}_{img.headers.get(
-                            'content-disposition').split(
-                            'filename=')[1].strip('"')}'''
-                        if img.content[:8] == b'\x89PNG\x0d\x0a\x1a\x0a':
-                            img_name = os.path.splitext(img_name)[0] + ".png"
-                        fpath = os.path.join(hw_dir, img_name)
-                        self.fm.downloadto(fpath, img, img_name, img_id)
-                        self.save_file_id(img_id, fpath)
-                        img_names.append(img_name)
+                    img = self.session.get(img_url, stream=True)
+                    img_name = f'''{i+1}_{img.headers.get(
+                        'content-disposition').split(
+                        'filename=')[1].strip('"')}'''
+                    if img.content[:8] == b'\x89PNG\x0d\x0a\x1a\x0a':
+                        img_name = os.path.splitext(img_name)[0] + ".png"
+                    fpath = os.path.join(hw_dir, img_name)
+                    self.fm.downloadto(fpath, img, img_name, quiet=True)
+                    img_names.append(img_name)
 
-                # add images to README.md in initiation
+                # add images to README.md
                 if img_names:
                     readme_path = os.path.join(hw_dir, "README.md")
                     with open(readme_path, "r") as f:

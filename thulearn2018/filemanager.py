@@ -119,13 +119,15 @@ class FileManager():
             with open(os.path.join(hw_dir, ".xszyid"), "w") as f:
                 f.write(hw["xszyid"])
 
-    def downloadto(self, save_path, file_page, file_name, file_id):
+    def downloadto(self, save_path, file_page, file_name, quiet=False):
         total_size = 0
         try:
             total_size = int(file_page.headers['Content-Length'])
         except:
             pass
         temp_size = 0
+        original_stdout = sys.stdout
+        sys.stdout = open(os.devnull, 'w') if quiet else original_stdout
         print("  New " + file_name + " !")
         if (not os.path.exists(save_path)):
             print("  Create " + file_name)
@@ -163,3 +165,4 @@ class FileManager():
                 os.rename(save_path+".tmp", save_path)
         if os.path.exists(save_path+".tmp"):
             os.remove(save_path+".tmp")
+        sys.stdout = original_stdout
