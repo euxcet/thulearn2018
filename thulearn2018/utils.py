@@ -36,3 +36,13 @@ def time_delta(t):
 
 def expired(timeStr):
     return timeStr < datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+def escape_str(s):
+    rules = {
+        '/': '、',
+        '&mdash;' : '—'
+    }
+    for k, v in rules.items():
+        s = s.replace(k, v)
+    return s

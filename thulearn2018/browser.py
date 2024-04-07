@@ -87,10 +87,8 @@ class Learn():
     def get_lessons(self, exclude=[], include=[]):
         content = self.jh.loads(self.post(settings.lessons_url(self.semester)))
         # first sort by lesson name, then sort by teacher name
-        lessons = [[x["wlkcid"], x["kcm"], x["jsm"], x["kch"]]
-                   for x in content["resultList"] if x["kcm"] not in exclude]
-        if include != []:
-            lessons = [lesson for lesson in lessons if lesson[1] in include]
+        lessons = [[x["wlkcid"], utils.escape_str(x["kcm"]), x["jsm"], x["kch"]]
+                   for x in content["resultList"] if (x["kcm"] not in exclude) and (include == [] or x["kcm"] in include or utils.escape_str(x["kcm"]) in include)]
 
         lessons.sort(key=lambda x: (x[1], x[2]))
 
@@ -106,15 +104,14 @@ class Learn():
             if (prev_lesson is None or prev_lesson[1] != kcm) and \
                (next_lesson is None or next_lesson[1] != kcm):
                 lessons[i].append(kcm)
-
-            if (prev_lesson is None or prev_lesson[1] != kcm or
+            elif (prev_lesson is None or prev_lesson[1] != kcm or
                prev_lesson[2] != jsm) and \
                (next_lesson is None or next_lesson[1] != kcm or
                next_lesson[2] != jsm):
                 lessons[i].append(f"{kcm}_{jsm}")
-
-            lessons[i].append(f"{kcm}_{kch}")
-
+            else:
+                lessons[i].append(f"{kcm}_{kch}")
+        print(lessons)
         return lessons
 
     def init_lessons(self, exclude, include):
