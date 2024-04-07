@@ -111,7 +111,6 @@ class Learn():
                 lessons[i].append(f"{kcm}_{jsm}")
             else:
                 lessons[i].append(f"{kcm}_{kch}")
-        print(lessons)
         return lessons
 
     def init_lessons(self, exclude, include):
