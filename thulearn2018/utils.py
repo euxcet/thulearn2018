@@ -44,6 +44,7 @@ def escape_str(s):
         '/': '、',
         '\t': '',
         '&quot;': '＂',
+        '&apos;': '＇',
         '&mdash;': '—',
         '&lsquo;': '‘',
         '&rsquo;': '’',
