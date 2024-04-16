@@ -1,5 +1,5 @@
 import datetime
-
+import re
 
 def size_format(size_b):
     if size_b < 1024:
@@ -39,9 +39,16 @@ def expired(timeStr):
 
 
 def escape_str(s):
+    s = re.sub(r'[\:\*\?\<\>\|\\]', '_', s)
     rules = {
         '/': '、',
-        '&mdash;' : '—'
+        '\t': '',
+        '&quot;': '＂',
+        '&mdash;': '—',
+        '&lsquo;': '‘',
+        '&rsquo;': '’',
+        '&ldquo;': '“',
+        '&rdquo;': '”',
     }
     for k, v in rules.items():
         s = s.replace(k, v)

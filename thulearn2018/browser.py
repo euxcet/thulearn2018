@@ -1,8 +1,6 @@
 import os
-import re
 
 import requests
-import shutil
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from . import filemanager, jsonhelper, settings, soup, utils
@@ -154,7 +152,7 @@ class Learn():
                     print('not found name')
                     exit(0)
                 # fix special character that exists in filename
-                real_filename = re.sub(r'[\:\*\?\<\>\|\\/\t]', '_', f[1])
+                real_filename = utils.escape_str(f[1])
                 fpath = os.path.join(self.path, lesson_name, "file",
                                      real_filename + extension)
                 self.fm.downloadto(fpath, fs, real_filename + extension)
@@ -172,8 +170,7 @@ class Learn():
                              hw["zynrStr"] != "" else hw["zt"]))
 
                 hw_dir = os.path.join(self.path, lesson_name, "homework",
-                                      re.sub(r"[\:\*\?\<\>\|\\/]+", "_",
-                                             hw_title))
+                                      utils.escape_str(hw_title))
                 self.fm.init_homework(hw, hw_dir, hw_title, hw_readme)
 
                 # download annexes and images
