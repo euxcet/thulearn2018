@@ -39,7 +39,7 @@ def expired(timeStr):
 
 
 def escape_str(s):
-    s = re.sub(r'[\:\*\?\<\>\|\\]', '_', s)
+    s = re.sub(r'[\:\*\?\<\>\|\\]', '_', s).strip()
     rules = {
         '/': '、',
         '\t': '',
