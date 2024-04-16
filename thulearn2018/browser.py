@@ -226,10 +226,11 @@ class Learn():
         else:
             print(f"Error: assignment may have expired. Details:\n{response}")
 
-    def get_ddl(self, lessons):
+    def get_ddl(self, lessons, download_submission=False):
         ddls = []
         for lesson in lessons:
-            ddls += self.download_homework(lesson[0], lesson[4], False)
+            ddls += self.download_homework(
+                lesson[0], lesson[4], download_submission)
         # delete expired homework by comparing ddl[2] with current time
         ddls = [ddl for ddl in ddls if not utils.expired(ddl[2])]
         ddls.sort(key=lambda x: x[2])

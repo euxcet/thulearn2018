@@ -78,7 +78,9 @@ def submit(name, m):
 @click.option('-s', '--semester', default='',
               help='Semester to show ddl, e.g. 2023-2024-1')
 @click.option('-o', '--path', default='', help='Path to save homework files')
-def ddl(exclude, include, semester, path):
+@click.option('--download-submission', is_flag=True, default=False,
+              help='Download submissions, used when not locally stored')
+def ddl(exclude, include, semester, path, download_submission):
     def align(string, length=0):
         len_en = len(string)
         len_utf8 = len(string.encode('utf-8'))
@@ -90,7 +92,7 @@ def ddl(exclude, include, semester, path):
         learn.path = path
     ddls = learn.get_ddl(learn.init_lessons(
         exclude=exclude.split(',') if exclude else [],
-        include=include.split(',') if include else []))
+        include=include.split(',') if include else []), download_submission)
     print('Total %d ddl(s)' % (len(ddls)))
     for ddl in ddls:
         print(align(ddl[0][0:8], 25), align(
