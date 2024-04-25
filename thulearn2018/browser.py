@@ -121,7 +121,7 @@ class Learn():
     def get_files_id(self, lesson_id):
         form = {"wlkcid": lesson_id}
         files = self.jh.loads(self.get(settings.files_url, params=form))
-        files_id = [row["id"] for row in files["object"]["rows"]]
+        files_id = [row["id"] for row in files["object"]["rows"]] if files["object"] else []
 
         return files_id
 
