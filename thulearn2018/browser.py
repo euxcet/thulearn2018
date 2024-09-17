@@ -65,20 +65,22 @@ class Learn():
         else:
             content = self.jh.loads(self.get(settings.semester_url))
             self.semester = content["result"]["id"]
+            semester_file_path = os.path.join(
+                settings.config_dir, self.semester+".txt")
             if os.path.exists(settings.local_file_path) and \
                not os.path.islink(settings.local_file_path):
                 os.rename(settings.local_file_path,
-                          os.path.join(settings.config_dir,
-                                       self.semester+".txt"))
+                          semester_file_path)
         # create or redirect local.txt to current semester
+        if not os.path.exists(semester_file_path):
+            with open(semester_file_path, 'w') as f:
+                pass
         if os.path.exists(settings.local_file_path):
             os.unlink(settings.local_file_path)
         if os.name == 'nt':
-            os.link(os.path.join(settings.config_dir, self.semester+".txt"),
-                    settings.local_file_path)
+            os.link(semester_file_path, settings.local_file_path)
         else:
-            os.symlink(os.path.join(settings.config_dir, self.semester+".txt"),
-                       settings.local_file_path)
+            os.symlink(semester_file_path, settings.local_file_path)
         self.local = self.fm.get_local()
 
     # -------------------------------------------------------------------------

@@ -23,6 +23,9 @@ elif (os.name == 'posix'):
         "XDG_CONFIG_HOME", os.path.expanduser("~/.config")), "thulearn2018")
 else:
     config_dir = Path.home()
+    
+if (not os.path.exists(config_dir)):
+    os.makedirs(config_dir)
 
 user_file_path = os.path.join(config_dir, "user.txt")
 local_file_path = os.path.join(config_dir, "local.txt")
